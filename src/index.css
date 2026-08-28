@@ -1,0 +1,44 @@
+:root {
+  --color-navy: #1b4b9c;
+  --color-orange: #f26522;
+  --color-skyblue: #8fcbeb;
+  --color-skyblue-tint: #f2f7fc;
+  --color-white: #ffffff;
+  --color-text-dark: #1f2937;
+  --color-text-gray: #6b7280;
+  --color-border: #e5e7eb;
+  --color-card-bg: #f8fafc;
+
+  --color-status-ok: #2d9955;
+  --color-status-busy: #ff6621;
+  --color-status-broken: #cc3333;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, 'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo',
+    sans-serif;
+  background: var(--color-card-bg);
+  color: var(--color-text-dark);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font-family: inherit;
+}

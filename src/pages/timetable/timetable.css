@@ -1,0 +1,64 @@
+@import '../../styles/shared.css';
+
+.tt-controls {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.tt-controls select {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+  background: var(--color-white);
+}
+
+.tt-table-wrap {
+  background: var(--color-white);
+  border-radius: 12px;
+  overflow-x: auto;
+  padding: 12px;
+}
+
+.tt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.tt-table th,
+.tt-table td {
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  text-align: center;
+  min-width: 90px;
+}
+
+.tt-table th {
+  background: var(--color-card-bg);
+  color: var(--color-text-gray);
+}
+
+.tt-cell {
+  cursor: default;
+  min-height: 36px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tt-cell.editable {
+  cursor: pointer;
+}
+
+.tt-cell.filled {
+  background: rgba(27, 75, 156, 0.08);
+  color: var(--color-navy);
+  font-weight: 600;
+}
+
+.tt-cell.editable:hover {
+  background: var(--color-card-bg);
+}

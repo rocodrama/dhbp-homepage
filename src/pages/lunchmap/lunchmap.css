@@ -1,0 +1,81 @@
+@import '../../styles/shared.css';
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.restaurant-card {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.restaurant-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.restaurant-name {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.restaurant-category {
+  font-size: 12px;
+  color: var(--color-text-gray);
+}
+
+.fav-btn {
+  border: none;
+  background: none;
+  font-size: 18px;
+  color: var(--color-orange);
+  line-height: 1;
+}
+
+.reaction-row {
+  display: flex;
+  gap: 8px;
+}
+
+.reaction-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: var(--color-text-gray);
+}
+
+.reaction-btn.active-like {
+  border-color: var(--color-status-ok, #2d9955);
+  color: var(--color-status-ok, #2d9955);
+}
+
+.reaction-btn.active-dislike {
+  border-color: var(--color-status-broken);
+  color: var(--color-status-broken);
+}
+
+.rating {
+  font-size: 13px;
+  color: var(--color-orange);
+}
+
+.restaurant-added-by {
+  font-size: 11px;
+  color: var(--color-text-gray);
+}
+
+.map-link-btn {
+  display: inline-block;
+  text-align: center;
+  margin-top: 4px;
+}

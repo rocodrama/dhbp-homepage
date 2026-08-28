@@ -1,0 +1,122 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function myProfile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isApproved() {
+      return isSignedIn() && myProfile().status == 'approved';
+    }
+
+    function isApprovedAdmin() {
+      return isSignedIn() && myProfile().status == 'approved' && myProfile().role == 'admin';
+    }
+
+    // 가입/승인 흐름 (기획서 4.0) — 신규 가입은 항상 pending/member로만 생성 가능,
+    // 승인·역할 변경은 관리자만. 첫 관리자는 콘솔에서 수동으로 지정.
+    match /users/{uid} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.auth.uid == uid
+        && request.resource.data.role == 'member'
+        && request.resource.data.status == 'pending';
+      allow update: if isApprovedAdmin()
+        || (isSignedIn() && request.auth.uid == uid
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.status == resource.data.status);
+      allow delete: if false;
+    }
+
+    // 매뉴얼 (기획서 4.1) — 조회는 승인된 회원 전체, 작성은 누구나,
+    // 수정/삭제는 작성자 본인 또는 관리자
+    match /manuals/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isApproved()
+        && (resource.data.authorId == request.auth.uid || isApprovedAdmin());
+    }
+
+    // 공지사항/게시판 (기획서 4.2) — 조회는 승인된 회원 전체, 작성은 누구나,
+    // 수정/삭제는 작성자 본인 또는 관리자, pinned(공지 고정)는 관리자만 바꿀 수 있음
+    match /posts/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.authorId == request.auth.uid
+        && (request.resource.data.pinned == false || isApprovedAdmin());
+      allow update: if isApproved()
+        && (
+          isApprovedAdmin()
+          || (resource.data.authorId == request.auth.uid
+              && request.resource.data.pinned == resource.data.pinned)
+        );
+      allow delete: if isApproved()
+        && (resource.data.authorId == request.auth.uid || isApprovedAdmin());
+    }
+
+    // 장비 현황 (기획서 4.3) — 조회는 승인된 회원 전체, 등록/삭제는 관리자만,
+    // 상태·스펙 수정은 관리자 또는 해당 장비 담당자(ownerId)만
+    match /equipment/{docId} {
+      allow read: if isApproved();
+      allow create, delete: if isApprovedAdmin();
+      allow update: if isApproved()
+        && (isApprovedAdmin() || resource.data.ownerId == request.auth.uid);
+    }
+
+    // 점심메뉴 지도 (기획서 4.4) — 조회/등록/즐겨찾기·평점·좋아요 수정은 승인된 회원 전체
+    // (다 같이 관리하는 공유 목록), 삭제는 등록자 본인 또는 관리자만
+    match /restaurants/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.addedBy == request.auth.uid;
+      allow update: if isApproved();
+      allow delete: if isApproved()
+        && (resource.data.addedBy == request.auth.uid || isApprovedAdmin());
+    }
+
+    // 체크리스트 (신규, 장비/자리 예약 대체) — 제출/과제 등을 인원별로 체크하는 목록.
+    // 조회는 승인된 회원 전체, 생성은 누구나 본인 명의로, 삭제는 만든 사람 또는 관리자.
+    // completions(체크 여부)는 다 같이 관리하는 값이라 승인된 회원이면 누구나 수정 가능
+    // (본인/관리자만 체크하도록 하는 제한은 클라이언트 UI에서 처리)
+    match /tasks/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isApproved();
+      allow delete: if isApproved()
+        && (resource.data.createdBy == request.auth.uid || isApprovedAdmin());
+    }
+
+    // 일정/캘린더 (기획서 4.6) — 조회는 승인된 회원 전체, 작성은 누구나,
+    // 수정/삭제는 작성자 본인 또는 관리자
+    match /events/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isApproved()
+        && (resource.data.authorId == request.auth.uid || isApprovedAdmin());
+    }
+
+    // 멤버별 학기 시간표 (기획서 4.9, 신규) — 조회는 승인된 회원 전체(서로 시간표 확인용),
+    // 본인 문서(uid)만 쓸 수 있음
+    match /timetables/{uid} {
+      allow read: if isApproved();
+      allow write: if isApproved() && request.auth.uid == uid;
+    }
+
+    // 민원처리함 (기획서 4.8) — 조회는 승인된 회원 전체(공개 처리 현황판),
+    // 제출은 누구나 본인 명의로, 상태 변경은 관리자만
+    match /complaints/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.status == '접수';
+      allow update: if isApprovedAdmin();
+      allow delete: if isApprovedAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+@import '../../styles/shared.css';
+
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.chip {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 12px;
+  color: var(--color-text-dark);
+}
+
+.chip.active {
+  background: var(--color-navy);
+  color: #fff;
+  border-color: var(--color-navy);
+}

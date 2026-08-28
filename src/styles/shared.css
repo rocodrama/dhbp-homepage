@@ -1,0 +1,212 @@
+/* Shared list/detail/form patterns reused across features (매뉴얼, 게시판, ...) */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  font-size: 13px;
+}
+
+.new-btn {
+  background: var(--color-orange);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.item-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.item-row {
+  background: var(--color-white);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-row-title {
+  font-size: 14px;
+  color: var(--color-text-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-row-meta {
+  font-size: 11px;
+  color: var(--color-text-gray);
+  white-space: nowrap;
+}
+
+.pin-badge {
+  background: var(--color-orange);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--color-text-gray);
+}
+
+.empty-state img {
+  width: 80px;
+  margin-bottom: 12px;
+}
+
+.form-card,
+.detail-card {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 24px;
+  max-width: 100%;
+}
+
+.form-card label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 16px 0 6px;
+}
+
+.form-card label:first-child {
+  margin-top: 0;
+}
+
+.form-card input,
+.form-card select,
+.form-card textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+/* used inside Modal, where the card chrome (bg/padding/radius) is already provided */
+.modal-form label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin: 14px 0 6px;
+}
+
+.modal-form label:first-child {
+  margin-top: 0;
+}
+
+.modal-form input,
+.modal-form select,
+.modal-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.btn-primary {
+  background: var(--color-orange);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn-secondary {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+}
+
+.btn-danger {
+  background: #fff;
+  border: 1px solid var(--color-status-broken);
+  color: var(--color-status-broken);
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 13px;
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.detail-title {
+  font-size: 20px;
+  margin: 0 0 6px;
+}
+
+.detail-meta {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  margin-bottom: 20px;
+}
+
+.detail-body {
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.detail-body img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+.detail-body pre {
+  background: var(--color-card-bg);
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.detail-body code {
+  background: var(--color-card-bg);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+.detail-body blockquote {
+  border-left: 3px solid var(--color-skyblue);
+  margin: 0;
+  padding-left: 14px;
+  color: var(--color-text-gray);
+}
