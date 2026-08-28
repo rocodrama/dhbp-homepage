@@ -6,7 +6,7 @@ import RestaurantModal from './RestaurantModal'
 import './lunchmap.css'
 
 function mapUrlFor(r) {
-  if (r.naverMapUrl) return r.naverMapUrl
+  if (r.naverMapUrl && /^https?:\/\//i.test(r.naverMapUrl)) return r.naverMapUrl
   return `https://map.naver.com/v5/search/${encodeURIComponent(r.name)}`
 }
 
