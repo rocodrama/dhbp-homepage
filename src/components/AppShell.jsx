@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { visibleNavItems } from './navItems'
@@ -9,6 +10,17 @@ export default function AppShell() {
   const items = visibleNavItems(isAdmin)
   const mobileTabItems = items.slice(0, 4)
   const current = items.find((item) => item.path === location.pathname)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onClickOutside)
+    return () => document.removeEventListener('mousedown', onClickOutside)
+  }, [menuOpen])
 
   return (
     <div className="shell">
@@ -33,15 +45,28 @@ export default function AppShell() {
       <div className="main-col">
         <header className="topbar">
           <h1 className="page-title">{current?.label ?? ''}</h1>
-          <button className="avatar-btn" onClick={signOutUser} title="로그아웃">
-            {profile?.photoURL ? (
-              <img src={profile.photoURL} alt="" className="avatar-img" />
-            ) : (
-              <span className="avatar-fallback">
-                {profile?.displayName?.[0] ?? '?'}
-              </span>
+          <div className="profile-menu" ref={menuRef}>
+            <button className="avatar-btn" onClick={() => setMenuOpen((v) => !v)} title="프로필">
+              {profile?.photoURL ? (
+                <img src={profile.photoURL} alt="" className="avatar-img" />
+              ) : (
+                <span className="avatar-fallback">
+                  {profile?.displayName?.[0] ?? '?'}
+                </span>
+              )}
+            </button>
+            {menuOpen && (
+              <div className="profile-dropdown">
+                <div className="profile-dropdown-info">
+                  <div className="profile-dropdown-name">{profile?.displayName ?? '이름 없음'}</div>
+                  <div className="profile-dropdown-email">{profile?.email}</div>
+                </div>
+                <button className="profile-dropdown-logout" onClick={signOutUser}>
+                  로그아웃
+                </button>
+              </div>
             )}
-          </button>
+          </div>
         </header>
 
         <main className="content-area">

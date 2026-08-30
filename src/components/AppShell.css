@@ -93,6 +93,54 @@
   object-fit: cover;
 }
 
+.profile-menu {
+  position: relative;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 44px;
+  right: 0;
+  width: 220px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  z-index: 20;
+}
+
+.profile-dropdown-info {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.profile-dropdown-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.profile-dropdown-email {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  margin-top: 2px;
+  word-break: break-all;
+}
+
+.profile-dropdown-logout {
+  width: 100%;
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  color: #d33;
+  background: none;
+  border: none;
+}
+
+.profile-dropdown-logout:hover {
+  background: rgba(211, 51, 51, 0.08);
+}
+
 .content-area {
   flex: 1;
   padding: 32px;
