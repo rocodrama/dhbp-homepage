@@ -37,18 +37,14 @@ export default function TaskList() {
       ) : (
         <div className="item-list">
           {tasks.map((t) => {
-            const items = t.items || []
-            const total = items.reduce((sum, it) => sum + (it.assignees?.length || 0), 0)
-            const done = items.reduce(
-              (sum, it) => sum + it.assignees.filter((a) => it.completions?.[a]).length,
-              0
-            )
+            const assignees = t.assignees || []
+            const doneCount = assignees.filter((a) => t.completions?.[a]).length
             return (
               <div className="item-row" key={t.id} onClick={() => setSelected(t)} style={{ cursor: 'pointer' }}>
                 <span className="item-row-title">{t.title}</span>
                 <span className="task-progress">
                   {t.dueDate && <span className="task-due">마감 {t.dueDate} · </span>}
-                  {done}/{total} 완료
+                  {doneCount}/{assignees.length}명 완료
                 </span>
               </div>
             )
