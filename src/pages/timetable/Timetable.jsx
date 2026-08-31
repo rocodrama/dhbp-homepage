@@ -8,47 +8,41 @@ import './timetable.css'
 
 const DAYS = ['월', '화', '수', '목', '금']
 
-// Assigns each entry a lane (side-by-side column) so overlapping entries render
-// next to each other instead of splitting into per-row chips.
+// Assigns each NAME a lane (side-by-side column) for the day, so every block
+// belonging to the same person sits at the same width/position all day —
+// only names whose time ranges actually overlap are forced into different lanes.
 function layoutDayEntries(dayEntries) {
-  const withIdx = dayEntries
-    .map((e) => ({
-      ...e,
-      start: TIME_SLOTS.indexOf(e.slots[0]),
-      end: TIME_SLOTS.indexOf(e.slots[e.slots.length - 1]),
-    }))
-    .sort((a, b) => a.start - b.start)
+  const withIdx = dayEntries.map((e) => ({
+    ...e,
+    start: TIME_SLOTS.indexOf(e.slots[0]),
+    end: TIME_SLOTS.indexOf(e.slots[e.slots.length - 1]),
+  }))
 
-  const positioned = []
-  let cluster = []
-  let clusterMaxEnd = -1
+  const slotsByName = {}
+  withIdx.forEach((e) => {
+    const set = (slotsByName[e.name] ??= new Set())
+    for (let i = e.start; i <= e.end; i++) set.add(i)
+  })
 
-  const flush = () => {
-    if (cluster.length === 0) return
-    const laneEnds = []
-    for (const e of cluster) {
-      let lane = laneEnds.findIndex((end) => end < e.start)
-      if (lane === -1) {
-        lane = laneEnds.length
-        laneEnds.push(e.end)
-      } else {
-        laneEnds[lane] = e.end
-      }
-      e.lane = lane
+  const conflicts = (a, b) => {
+    for (const i of slotsByName[a]) if (slotsByName[b].has(i)) return true
+    return false
+  }
+
+  const laneOfName = {}
+  const laneOccupants = [] // laneOccupants[lane] = names already placed in that lane
+  for (const name of Object.keys(slotsByName).sort()) {
+    let lane = laneOccupants.findIndex((names) => !names.some((other) => conflicts(name, other)))
+    if (lane === -1) {
+      lane = laneOccupants.length
+      laneOccupants.push([])
     }
-    const numLanes = laneEnds.length
-    cluster.forEach((e) => positioned.push({ ...e, numLanes }))
-    cluster = []
+    laneOccupants[lane].push(name)
+    laneOfName[name] = lane
   }
 
-  for (const e of withIdx) {
-    if (cluster.length > 0 && e.start > clusterMaxEnd) flush()
-    cluster.push(e)
-    clusterMaxEnd = Math.max(clusterMaxEnd, e.end)
-  }
-  flush()
-
-  return positioned
+  const numLanes = laneOccupants.length || 1
+  return withIdx.map((e) => ({ ...e, lane: laneOfName[e.name], numLanes }))
 }
 
 function slotKey(day, slot) {
