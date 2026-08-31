@@ -27,14 +27,14 @@ export default function MarkdownEditor({ value, onChange }) {
         </div>
       </div>
 
-      {tab === 'write' ? (
-        <textarea
-          className="md-textarea"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="마크다운으로 작성하세요. # 제목, **굵게**, - 목록 등을 쓸 수 있어요."
-        />
-      ) : (
+      <textarea
+        className="md-textarea"
+        hidden={tab !== 'write'}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="마크다운으로 작성하세요. # 제목, **굵게**, - 목록, ```python 코드블럭 등을 쓸 수 있어요."
+      />
+      {tab === 'preview' && (
         <div className="md-preview" dangerouslySetInnerHTML={{ __html: html }} />
       )}
     </div>
