@@ -8,6 +8,10 @@ import './timetable.css'
 
 const DAYS = ['월', '화', '수', '목', '금']
 
+function isSafe(entry, dayEntries) {
+  return !dayEntries.some((o) => o.id !== entry.id && o.slots.some((s) => entry.slots.includes(s)))
+}
+
 export default function Timetable() {
   const { user } = useAuth()
   const [filterName, setFilterName] = useState('all')
@@ -22,11 +26,7 @@ export default function Timetable() {
   }, [])
 
   const names = [...new Set(entries.map((e) => e.name))].sort()
-
-  const occupantsFor = (day, slot) =>
-    entries.filter(
-      (e) => e.day === day && e.slots?.includes(slot) && (filterName === 'all' || e.name === filterName)
-    )
+  const visibleEntries = entries.filter((e) => filterName === 'all' || e.name === filterName)
 
   const handleAddClass = async (name, day, slots) => {
     await addDoc(collection(db, 'timetableEntries'), {
@@ -42,6 +42,24 @@ export default function Timetable() {
     if (!confirm(`"${entry.name}"의 ${entry.day}요일 일정을 삭제할까요?`)) return
     await deleteDoc(doc(db, 'timetableEntries', entry.id))
   }
+
+  const renderChip = (entry) => (
+    <span key={entry.id} className="tt-chip" style={{ background: colorForName(entry.name) }} title={entry.name}>
+      {entry.name}
+      <button
+        type="button"
+        className="tt-chip-remove"
+        onClick={(e) => {
+          e.stopPropagation()
+          handleDeleteEntry(entry)
+        }}
+      >
+        ×
+      </button>
+    </span>
+  )
+
+  const rowSpanLeft = {} // day -> remaining rows already covered by an earlier rowSpan
 
   return (
     <div>
@@ -74,35 +92,32 @@ export default function Timetable() {
               <tr key={slot}>
                 <th>{slot}</th>
                 {DAYS.map((day) => {
-                  const occupants = occupantsFor(day, slot)
+                  if (rowSpanLeft[day] > 0) {
+                    rowSpanLeft[day] -= 1
+                    return null
+                  }
+
+                  const dayEntries = visibleEntries.filter((e) => e.day === day)
+                  const starting = dayEntries.find((e) => e.slots[0] === slot && isSafe(e, dayEntries))
+
+                  if (starting) {
+                    rowSpanLeft[day] = starting.slots.length - 1
+                    return (
+                      <td
+                        key={day}
+                        className="tt-cell editable tt-cell-span"
+                        rowSpan={starting.slots.length}
+                        onClick={() => setAddTarget({ day, slot })}
+                      >
+                        <div className="tt-occupants">{renderChip(starting)}</div>
+                      </td>
+                    )
+                  }
+
+                  const here = dayEntries.filter((e) => !isSafe(e, dayEntries) && e.slots.includes(slot))
                   return (
-                    <td
-                      key={day}
-                      className="tt-cell editable"
-                      onClick={() => setAddTarget({ day, slot })}
-                    >
-                      <div className="tt-occupants">
-                        {occupants.map((e) => (
-                          <span
-                            key={e.id}
-                            className="tt-chip"
-                            style={{ background: colorForName(e.name) }}
-                            title={e.name}
-                          >
-                            {e.name}
-                            <button
-                              type="button"
-                              className="tt-chip-remove"
-                              onClick={(ev) => {
-                                ev.stopPropagation()
-                                handleDeleteEntry(e)
-                              }}
-                            >
-                              ×
-                            </button>
-                          </span>
-                        ))}
-                      </div>
+                    <td key={day} className="tt-cell editable" onClick={() => setAddTarget({ day, slot })}>
+                      <div className="tt-occupants">{here.map(renderChip)}</div>
                     </td>
                   )
                 })}

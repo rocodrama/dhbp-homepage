@@ -54,6 +54,22 @@
   background: var(--color-card-bg);
 }
 
+.tt-cell-span {
+  padding: 2px;
+}
+
+.tt-cell-span .tt-occupants {
+  height: 100%;
+}
+
+.tt-cell-span .tt-chip {
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  justify-content: center;
+  padding: 6px 4px;
+}
+
 .tt-occupants {
   display: flex;
   flex-wrap: wrap;
