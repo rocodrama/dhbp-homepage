@@ -8,8 +8,47 @@ import './timetable.css'
 
 const DAYS = ['월', '화', '수', '목', '금']
 
-function isSafe(entry, dayEntries) {
-  return !dayEntries.some((o) => o.id !== entry.id && o.slots.some((s) => entry.slots.includes(s)))
+// Assigns each entry a lane (side-by-side column) so overlapping entries render
+// next to each other instead of splitting into per-row chips.
+function layoutDayEntries(dayEntries) {
+  const withIdx = dayEntries
+    .map((e) => ({
+      ...e,
+      start: TIME_SLOTS.indexOf(e.slots[0]),
+      end: TIME_SLOTS.indexOf(e.slots[e.slots.length - 1]),
+    }))
+    .sort((a, b) => a.start - b.start)
+
+  const positioned = []
+  let cluster = []
+  let clusterMaxEnd = -1
+
+  const flush = () => {
+    if (cluster.length === 0) return
+    const laneEnds = []
+    for (const e of cluster) {
+      let lane = laneEnds.findIndex((end) => end < e.start)
+      if (lane === -1) {
+        lane = laneEnds.length
+        laneEnds.push(e.end)
+      } else {
+        laneEnds[lane] = e.end
+      }
+      e.lane = lane
+    }
+    const numLanes = laneEnds.length
+    cluster.forEach((e) => positioned.push({ ...e, numLanes }))
+    cluster = []
+  }
+
+  for (const e of withIdx) {
+    if (cluster.length > 0 && e.start > clusterMaxEnd) flush()
+    cluster.push(e)
+    clusterMaxEnd = Math.max(clusterMaxEnd, e.end)
+  }
+  flush()
+
+  return positioned
 }
 
 export default function Timetable() {
@@ -43,24 +82,6 @@ export default function Timetable() {
     await deleteDoc(doc(db, 'timetableEntries', entry.id))
   }
 
-  const renderChip = (entry) => (
-    <span key={entry.id} className="tt-chip" style={{ background: colorForName(entry.name) }} title={entry.name}>
-      {entry.name}
-      <button
-        type="button"
-        className="tt-chip-remove"
-        onClick={(e) => {
-          e.stopPropagation()
-          handleDeleteEntry(entry)
-        }}
-      >
-        ×
-      </button>
-    </span>
-  )
-
-  const rowSpanLeft = {} // day -> remaining rows already covered by an earlier rowSpan
-
   return (
     <div>
       <div className="tt-controls">
@@ -78,53 +99,59 @@ export default function Timetable() {
       </div>
 
       <div className="tt-table-wrap">
-        <table className="tt-table">
-          <thead>
-            <tr>
-              <th></th>
-              {DAYS.map((d) => (
-                <th key={d}>{d}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {TIME_SLOTS.map((slot) => (
-              <tr key={slot}>
-                <th>{slot}</th>
-                {DAYS.map((day) => {
-                  if (rowSpanLeft[day] > 0) {
-                    rowSpanLeft[day] -= 1
-                    return null
-                  }
+        <div className="tt-grid" style={{ gridTemplateRows: `40px repeat(${TIME_SLOTS.length}, 56px)` }}>
+          <div className="tt-grid-corner" style={{ gridColumn: 1, gridRow: 1 }} />
+          {DAYS.map((d, di) => (
+            <div key={d} className="tt-grid-day-label" style={{ gridColumn: di + 2, gridRow: 1 }}>
+              {d}
+            </div>
+          ))}
+          {TIME_SLOTS.map((slot, si) => (
+            <div key={slot} className="tt-grid-time-label" style={{ gridColumn: 1, gridRow: si + 2 }}>
+              {slot}
+            </div>
+          ))}
 
-                  const dayEntries = visibleEntries.filter((e) => e.day === day)
-                  const starting = dayEntries.find((e) => e.slots[0] === slot && isSafe(e, dayEntries))
+          {DAYS.map((day) =>
+            TIME_SLOTS.map((slot, si) => (
+              <div
+                key={day + slot}
+                className="tt-grid-bg-cell"
+                style={{ gridColumn: DAYS.indexOf(day) + 2, gridRow: si + 2 }}
+                onClick={() => setAddTarget({ day, slot })}
+              />
+            ))
+          )}
 
-                  if (starting) {
-                    rowSpanLeft[day] = starting.slots.length - 1
-                    return (
-                      <td
-                        key={day}
-                        className="tt-cell editable tt-cell-span"
-                        rowSpan={starting.slots.length}
-                        onClick={() => setAddTarget({ day, slot })}
-                      >
-                        <div className="tt-occupants">{renderChip(starting)}</div>
-                      </td>
-                    )
-                  }
-
-                  const here = dayEntries.filter((e) => !isSafe(e, dayEntries) && e.slots.includes(slot))
-                  return (
-                    <td key={day} className="tt-cell editable" onClick={() => setAddTarget({ day, slot })}>
-                      <div className="tt-occupants">{here.map(renderChip)}</div>
-                    </td>
-                  )
-                })}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          {DAYS.map((day, di) =>
+            layoutDayEntries(visibleEntries.filter((e) => e.day === day)).map((e) => (
+              <div
+                key={e.id}
+                className="tt-grid-entry"
+                style={{
+                  gridColumn: di + 2,
+                  gridRow: `${e.start + 2} / span ${e.end - e.start + 1}`,
+                  width: `calc(${100 / e.numLanes}% - 3px)`,
+                  marginLeft: `calc(${100 / e.numLanes}% * ${e.lane})`,
+                  background: colorForName(e.name),
+                }}
+                title={e.name}
+              >
+                <span className="tt-grid-entry-name">{e.name}</span>
+                <button
+                  type="button"
+                  className="tt-chip-remove"
+                  onClick={(ev) => {
+                    ev.stopPropagation()
+                    handleDeleteEntry(e)
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))
+          )}
+        </div>
       </div>
 
       {addTarget && (
