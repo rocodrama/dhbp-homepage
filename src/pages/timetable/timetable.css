@@ -49,6 +49,11 @@
   background: var(--color-card-bg);
 }
 
+.tt-grid-bg-cell.selected {
+  background: rgba(27, 75, 156, 0.18);
+  box-shadow: inset 0 0 0 2px var(--color-navy);
+}
+
 .tt-grid-entry {
   position: relative;
   align-self: stretch;
@@ -56,26 +61,29 @@
   margin: 1px 0;
   border-radius: 6px;
   color: #fff;
-  font-size: 10px;
   font-weight: 600;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 4px 2px;
+  padding: 6px 2px;
   overflow: hidden;
   text-align: center;
 }
 
 .tt-grid-entry-name {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 1px;
+  font-size: 11px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
+  max-height: 100%;
 }
 
 .tt-chip-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
   border: none;
   background: rgba(255, 255, 255, 0.3);
   color: #fff;
@@ -91,4 +99,30 @@
 
 .tt-chip-remove:hover {
   background: rgba(255, 255, 255, 0.55);
+}
+
+.tt-multi-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tt-multi-bar input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.tt-multi-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-navy);
+  white-space: nowrap;
+}
+
+.tt-multi-hint {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  margin: -8px 0 12px;
 }
