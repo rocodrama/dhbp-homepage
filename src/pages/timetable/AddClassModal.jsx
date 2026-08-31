@@ -5,21 +5,20 @@ import './timetable.css'
 
 const DAYS = ['월', '화', '수', '목', '금']
 
-export default function AddClassModal({ initialDay, initialSlot, approvedUsers, defaultUid, onSave, onClose }) {
-  const [targetUid, setTargetUid] = useState(defaultUid)
+export default function AddClassModal({ initialDay, initialSlot, onSave, onClose }) {
+  const [name, setName] = useState('')
   const [day, setDay] = useState(initialDay)
   const [startSlot, setStartSlot] = useState(initialSlot)
   const [endSlot, setEndSlot] = useState(initialSlot)
-  const [courseName, setCourseName] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!courseName.trim()) return
+    if (!name.trim()) return
     const startIdx = TIME_SLOTS.indexOf(startSlot)
     const endIdx = TIME_SLOTS.indexOf(endSlot)
     const [from, to] = startIdx <= endIdx ? [startIdx, endIdx] : [endIdx, startIdx]
     const slots = TIME_SLOTS.slice(from, to + 1)
-    onSave(targetUid, day, slots, courseName.trim())
+    onSave(name.trim(), day, slots)
     onClose()
   }
 
@@ -27,13 +26,7 @@ export default function AddClassModal({ initialDay, initialSlot, approvedUsers, 
     <Modal onClose={onClose}>
       <form className="modal-form" onSubmit={handleSubmit}>
         <label>이름</label>
-        <select value={targetUid} onChange={(e) => setTargetUid(e.target.value)}>
-          {approvedUsers.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.displayName}
-            </option>
-          ))}
-        </select>
+        <input value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
 
         <label>요일</label>
         <select value={day} onChange={(e) => setDay(e.target.value)}>
@@ -61,9 +54,6 @@ export default function AddClassModal({ initialDay, initialSlot, approvedUsers, 
             </option>
           ))}
         </select>
-
-        <label>수업명</label>
-        <input value={courseName} onChange={(e) => setCourseName(e.target.value)} required autoFocus />
 
         <div className="form-actions">
           <button type="submit" className="btn-primary">

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
-import { useApprovedUsers } from '../equipment/useApprovedUsers'
 import { TIME_SLOTS, colorForName } from './constants'
 import AddClassModal from './AddClassModal'
 import './timetable.css'
@@ -11,57 +10,47 @@ const DAYS = ['월', '화', '수', '목', '금']
 
 export default function Timetable() {
   const { user } = useAuth()
-  const approvedUsers = useApprovedUsers()
-  const [filterUid, setFilterUid] = useState('all')
-  const [allTimetables, setAllTimetables] = useState({}) // uid -> { displayName, cells }
+  const [filterName, setFilterName] = useState('all')
+  const [entries, setEntries] = useState([])
   const [addTarget, setAddTarget] = useState(null) // { day, slot } | null
 
   useEffect(() => {
-    const unsub = onSnapshot(collection(db, 'timetables'), (snap) => {
-      const next = {}
-      snap.docs.forEach((d) => (next[d.id] = d.data()))
-      setAllTimetables(next)
+    const unsub = onSnapshot(collection(db, 'timetableEntries'), (snap) => {
+      setEntries(snap.docs.map((d) => ({ id: d.id, ...d.data() })))
     })
     return unsub
   }, [])
 
-  const occupantsFor = (day, slot) => {
-    const key = `${day}_${slot}`
-    return Object.entries(allTimetables)
-      .filter(([uid, tt]) => tt.cells?.[key] && (filterUid === 'all' || uid === filterUid))
-      .map(([uid, tt]) => ({ uid, displayName: tt.displayName ?? '이름없음', courseName: tt.cells[key] }))
-  }
+  const names = [...new Set(entries.map((e) => e.name))].sort()
 
-  const handleAddClass = async (targetUid, day, slots, courseName) => {
-    const targetDoc = allTimetables[targetUid] || {}
-    const next = { ...(targetDoc.cells || {}) }
-    slots.forEach((slot) => (next[`${day}_${slot}`] = courseName))
-    const targetUser = approvedUsers.find((u) => u.id === targetUid)
-    await setDoc(doc(db, 'timetables', targetUid), {
-      displayName: targetDoc.displayName || targetUser?.displayName || '익명',
-      cells: next,
+  const occupantsFor = (day, slot) =>
+    entries.filter(
+      (e) => e.day === day && e.slots?.includes(slot) && (filterName === 'all' || e.name === filterName)
+    )
+
+  const handleAddClass = async (name, day, slots) => {
+    await addDoc(collection(db, 'timetableEntries'), {
+      name,
+      day,
+      slots,
+      createdBy: user.uid,
+      createdAt: serverTimestamp(),
     })
   }
 
-  const handleDeleteOccupant = async (occupant, day, slot) => {
-    if (!confirm(`${occupant.displayName}님의 ${day}요일 ${slot} "${occupant.courseName}"을(를) 삭제할까요?`)) return
-    const targetDoc = allTimetables[occupant.uid] || {}
-    const next = { ...(targetDoc.cells || {}) }
-    delete next[`${day}_${slot}`]
-    await setDoc(doc(db, 'timetables', occupant.uid), {
-      displayName: targetDoc.displayName || occupant.displayName,
-      cells: next,
-    })
+  const handleDeleteEntry = async (entry) => {
+    if (!confirm(`"${entry.name}"의 ${entry.day}요일 일정을 삭제할까요?`)) return
+    await deleteDoc(doc(db, 'timetableEntries', entry.id))
   }
 
   return (
     <div>
       <div className="tt-controls">
-        <select value={filterUid} onChange={(e) => setFilterUid(e.target.value)}>
+        <select value={filterName} onChange={(e) => setFilterName(e.target.value)}>
           <option value="all">전체 보기</option>
-          {approvedUsers.map((u) => (
-            <option key={u.id} value={u.id}>
-              {u.displayName}
+          {names.map((n) => (
+            <option key={n} value={n}>
+              {n}
             </option>
           ))}
         </select>
@@ -93,20 +82,20 @@ export default function Timetable() {
                       onClick={() => setAddTarget({ day, slot })}
                     >
                       <div className="tt-occupants">
-                        {occupants.map((o) => (
+                        {occupants.map((e) => (
                           <span
-                            key={o.uid}
+                            key={e.id}
                             className="tt-chip"
-                            style={{ background: colorForName(o.displayName) }}
-                            title={`${o.displayName} · ${o.courseName}`}
+                            style={{ background: colorForName(e.name) }}
+                            title={e.name}
                           >
-                            {o.displayName}
+                            {e.name}
                             <button
                               type="button"
                               className="tt-chip-remove"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleDeleteOccupant(o, day, slot)
+                              onClick={(ev) => {
+                                ev.stopPropagation()
+                                handleDeleteEntry(e)
                               }}
                             >
                               ×
@@ -127,8 +116,6 @@ export default function Timetable() {
         <AddClassModal
           initialDay={addTarget.day}
           initialSlot={addTarget.slot}
-          approvedUsers={approvedUsers}
-          defaultUid={user.uid}
           onSave={handleAddClass}
           onClose={() => setAddTarget(null)}
         />
