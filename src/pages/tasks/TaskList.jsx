@@ -7,7 +7,9 @@ import './tasks.css'
 export default function TaskList() {
   const [tasks, setTasks] = useState([])
   const [loading, setLoading] = useState(true)
-  const [selected, setSelected] = useState(undefined) // undefined = closed, null = create, obj = view
+  const [selectedId, setSelectedId] = useState(null) // null = closed, 'new' = create, else task id
+
+  const selectedTask = selectedId && selectedId !== 'new' ? tasks.find((t) => t.id === selectedId) : null
 
   useEffect(() => {
     const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'))
@@ -22,7 +24,7 @@ export default function TaskList() {
     <div>
       <div className="toolbar">
         <div style={{ flex: 1 }} />
-        <button className="new-btn" onClick={() => setSelected(null)}>
+        <button className="new-btn" onClick={() => setSelectedId('new')}>
           + 미션 만들기
         </button>
       </div>
@@ -40,7 +42,7 @@ export default function TaskList() {
             const assignees = t.assignees || []
             const doneCount = assignees.filter((a) => t.completions?.[a]).length
             return (
-              <div className="item-row" key={t.id} onClick={() => setSelected(t)} style={{ cursor: 'pointer' }}>
+              <div className="item-row" key={t.id} onClick={() => setSelectedId(t.id)} style={{ cursor: 'pointer' }}>
                 <span className="item-row-title">{t.title}</span>
                 <span className="task-progress">
                   {t.dueDate && <span className="task-due">마감 {t.dueDate} · </span>}
@@ -52,7 +54,8 @@ export default function TaskList() {
         </div>
       )}
 
-      {selected !== undefined && <TaskModal task={selected} onClose={() => setSelected(undefined)} />}
+      {selectedId === 'new' && <TaskModal task={null} onClose={() => setSelectedId(null)} />}
+      {selectedTask && <TaskModal task={selectedTask} onClose={() => setSelectedId(null)} />}
     </div>
   )
 }
