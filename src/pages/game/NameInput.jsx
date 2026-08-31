@@ -3,8 +3,7 @@ import { useState } from 'react'
 export default function NameInput({ names, setNames, placeholder }) {
   const [text, setText] = useState('')
 
-  const add = (e) => {
-    e.preventDefault()
+  const add = () => {
     const trimmed = text.trim()
     if (!trimmed) return
     setNames([...names, trimmed])
@@ -15,21 +14,29 @@ export default function NameInput({ names, setNames, placeholder }) {
 
   return (
     <div>
-      <form className="name-input-row" onSubmit={add}>
+      <div className="name-input-row">
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault()
+              add()
+            }
+          }}
           placeholder={placeholder}
         />
-        <button type="submit" className="btn-secondary">
+        <button type="button" className="btn-secondary" onClick={add}>
           추가
         </button>
-      </form>
+      </div>
       <div className="name-chips">
         {names.map((n, i) => (
           <span className="name-chip" key={i}>
             {n}
-            <button onClick={() => remove(i)}>✕</button>
+            <button type="button" onClick={() => remove(i)}>
+              ✕
+            </button>
           </span>
         ))}
       </div>
