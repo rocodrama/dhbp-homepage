@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { doc, onSnapshot, setDoc } from 'firebase/firestore'
+import { collection, doc, onSnapshot, setDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import { useApprovedUsers } from '../equipment/useApprovedUsers'
-import { TIME_SLOTS } from './constants'
+import { TIME_SLOTS, colorForName } from './constants'
 import AddClassModal from './AddClassModal'
 import './timetable.css'
 
@@ -12,33 +12,40 @@ const DAYS = ['월', '화', '수', '목', '금']
 export default function Timetable() {
   const { user, profile } = useAuth()
   const approvedUsers = useApprovedUsers()
-  const [viewUid, setViewUid] = useState(user.uid)
-  const [cells, setCells] = useState({})
+  const [filterUid, setFilterUid] = useState('all')
+  const [allTimetables, setAllTimetables] = useState({}) // uid -> { displayName, cells }
   const [addTarget, setAddTarget] = useState(null) // { day, slot } | null
 
-  const isMine = viewUid === user.uid
-
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'timetables', viewUid), (snap) => {
-      setCells(snap.exists() ? snap.data().cells || {} : {})
+    const unsub = onSnapshot(collection(db, 'timetables'), (snap) => {
+      const next = {}
+      snap.docs.forEach((d) => (next[d.id] = d.data()))
+      setAllTimetables(next)
     })
     return unsub
-  }, [viewUid])
+  }, [])
+
+  const myCells = allTimetables[user.uid]?.cells || {}
 
   const saveCells = async (next) => {
-    setCells(next)
     await setDoc(doc(db, 'timetables', user.uid), {
       displayName: profile?.displayName ?? '익명',
       cells: next,
     })
   }
 
-  const handleCellClick = (day, slot) => {
-    if (!isMine) return
+  const occupantsFor = (day, slot) => {
     const key = `${day}_${slot}`
-    if (cells[key]) {
-      if (!confirm(`${day}요일 ${slot} "${cells[key]}" 삭제할까요?`)) return
-      const next = { ...cells }
+    return Object.entries(allTimetables)
+      .filter(([uid, tt]) => tt.cells?.[key] && (filterUid === 'all' || uid === filterUid))
+      .map(([uid, tt]) => ({ uid, displayName: tt.displayName ?? '이름없음', courseName: tt.cells[key] }))
+  }
+
+  const handleCellClick = (day, slot) => {
+    const key = `${day}_${slot}`
+    if (myCells[key]) {
+      if (!confirm(`${day}요일 ${slot} 내 일정 "${myCells[key]}"을(를) 삭제할까요?`)) return
+      const next = { ...myCells }
       delete next[key]
       saveCells(next)
     } else {
@@ -47,7 +54,7 @@ export default function Timetable() {
   }
 
   const handleAddClass = (day, slots, name) => {
-    const next = { ...cells }
+    const next = { ...myCells }
     slots.forEach((slot) => (next[`${day}_${slot}`] = name))
     saveCells(next)
   }
@@ -55,21 +62,17 @@ export default function Timetable() {
   return (
     <div>
       <div className="tt-controls">
-        <select value={viewUid} onChange={(e) => setViewUid(e.target.value)}>
-          <option value={user.uid}>내 시간표</option>
-          {approvedUsers
-            .filter((u) => u.id !== user.uid)
-            .map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.displayName}
-              </option>
-            ))}
+        <select value={filterUid} onChange={(e) => setFilterUid(e.target.value)}>
+          <option value="all">전체 보기</option>
+          {approvedUsers.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.displayName}
+            </option>
+          ))}
         </select>
-        {isMine && (
-          <button className="new-btn" onClick={() => setAddTarget({ day: DAYS[0], slot: TIME_SLOTS[0] })}>
-            + 수업 추가
-          </button>
-        )}
+        <button className="new-btn" onClick={() => setAddTarget({ day: DAYS[0], slot: TIME_SLOTS[0] })}>
+          + 내 수업 추가
+        </button>
       </div>
 
       <div className="tt-table-wrap">
@@ -87,15 +90,25 @@ export default function Timetable() {
               <tr key={slot}>
                 <th>{slot}</th>
                 {DAYS.map((day) => {
-                  const key = `${day}_${slot}`
-                  const value = cells[key]
+                  const occupants = occupantsFor(day, slot)
                   return (
                     <td
                       key={day}
-                      className={'tt-cell' + (isMine ? ' editable' : '') + (value ? ' filled' : '')}
+                      className="tt-cell editable"
                       onClick={() => handleCellClick(day, slot)}
                     >
-                      {value || ''}
+                      <div className="tt-occupants">
+                        {occupants.map((o) => (
+                          <span
+                            key={o.uid}
+                            className="tt-chip"
+                            style={{ background: colorForName(o.displayName) }}
+                            title={`${o.displayName} · ${o.courseName}`}
+                          >
+                            {o.displayName}
+                          </span>
+                        ))}
+                      </div>
                     </td>
                   )
                 })}

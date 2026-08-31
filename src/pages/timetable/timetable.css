@@ -42,23 +42,30 @@
 }
 
 .tt-cell {
-  cursor: default;
   min-height: 36px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  vertical-align: middle;
 }
 
 .tt-cell.editable {
   cursor: pointer;
 }
 
-.tt-cell.filled {
-  background: rgba(27, 75, 156, 0.08);
-  color: var(--color-navy);
-  font-weight: 600;
-}
-
 .tt-cell.editable:hover {
   background: var(--color-card-bg);
+}
+
+.tt-occupants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  justify-content: center;
+}
+
+.tt-chip {
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  white-space: nowrap;
 }
