@@ -28,45 +28,6 @@
   color: var(--color-text-gray);
 }
 
-.name-input-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.name-input-row input {
-  flex: 1;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  font-size: 13px;
-}
-
-.name-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
-}
-
-.name-chip {
-  background: var(--color-white);
-  border-radius: 999px;
-  padding: 6px 8px 6px 14px;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.name-chip button {
-  border: none;
-  background: none;
-  color: var(--color-text-gray);
-  font-size: 14px;
-  line-height: 1;
-}
-
 /* Lottery draw */
 .card-grid {
   display: grid;

@@ -5,7 +5,7 @@ export const NAV_ITEMS = [
   { path: '/equipment', label: '장비 현황', icon: '🖥️' },
   { path: '/calendar', label: '일정/캘린더', icon: '📅' },
   { path: '/timetable', label: '학기 시간표', icon: '🗂️' },
-  { path: '/checklist', label: '체크리스트', icon: '✅' },
+  { path: '/checklist', label: '미션 체크', icon: '✅' },
   { path: '/lunch-map', label: '점심메뉴 지도', icon: '🍜' },
   { path: '/game', label: '내기 게임', icon: '🎲' },
   { path: '/complaints', label: '민원처리함', icon: '💬' },
