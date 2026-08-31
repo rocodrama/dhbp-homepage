@@ -147,50 +147,6 @@
   border-top: none;
 }
 
-/* Slot machine */
-.slot-reels {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.slot-reel {
-  flex: 1;
-  background: var(--color-white);
-  border-radius: 10px;
-  padding: 24px 8px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 14px;
-  border: 2px solid var(--color-border);
-  min-height: 24px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.slot-reel.spinning {
-  filter: blur(1.5px);
-  border-color: var(--color-skyblue);
-}
-
-.slot-reel.stopped {
-  animation: slot-stop 0.4s ease-out;
-  border-color: var(--color-orange);
-}
-
-@keyframes slot-stop {
-  0% {
-    transform: scale(1.15) translateY(-6px);
-  }
-  60% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
 /* Dice roll */
 .dice-row {
   display: flex;
@@ -287,13 +243,6 @@
   white-space: nowrap;
 }
 
-.result-banner {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--color-orange);
-  text-align: center;
-  margin: 16px 0;
-}
 
 /* Ladder */
 .ladder-scroll {

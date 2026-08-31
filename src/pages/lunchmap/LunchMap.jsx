@@ -3,6 +3,7 @@ import { arrayRemove, arrayUnion, collection, onSnapshot, orderBy, query, doc, u
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import RestaurantModal from './RestaurantModal'
+import LunchPicker from './LunchPicker'
 import './lunchmap.css'
 
 function mapUrlFor(r) {
@@ -15,6 +16,7 @@ export default function LunchMap() {
   const [restaurants, setRestaurants] = useState([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState(undefined) // undefined = closed, null = create, obj = edit
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   useEffect(() => {
     const q = query(collection(db, 'restaurants'), orderBy('createdAt', 'desc'))
@@ -50,6 +52,13 @@ export default function LunchMap() {
     <div>
       <div className="toolbar">
         <div style={{ flex: 1 }} />
+        <button
+          className="btn-secondary"
+          onClick={() => setPickerOpen(true)}
+          disabled={restaurants.length === 0}
+        >
+          🎰 랜덤 뽑기
+        </button>
         <button className="new-btn" onClick={() => setSelected(null)}>
           + 맛집 추가
         </button>
@@ -113,6 +122,14 @@ export default function LunchMap() {
 
       {selected !== undefined && (
         <RestaurantModal restaurant={selected} onClose={() => setSelected(undefined)} />
+      )}
+
+      {pickerOpen && (
+        <LunchPicker
+          restaurants={restaurants}
+          mapUrlFor={mapUrlFor}
+          onClose={() => setPickerOpen(false)}
+        />
       )}
     </div>
   )
