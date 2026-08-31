@@ -98,11 +98,11 @@ service cloud.firestore {
         && (resource.data.authorId == request.auth.uid || isApprovedAdmin());
     }
 
-    // 멤버별 학기 시간표 (기획서 4.9, 신규) — 조회는 승인된 회원 전체(서로 시간표 확인용),
-    // 본인 문서(uid)만 쓸 수 있음
+    // 멤버별 학기 시간표 (기획서 4.9, 신규) — 조회/작성 모두 승인된 회원 전체
+    // (서로의 시간표를 대신 등록해줄 수 있어야 해서 본인 문서로 제한하지 않음)
     match /timetables/{uid} {
       allow read: if isApproved();
-      allow write: if isApproved() && request.auth.uid == uid;
+      allow write: if isApproved();
     }
 
     // 민원처리함 (기획서 4.8) — 조회는 승인된 회원 전체(공개 처리 현황판),

@@ -10,7 +10,7 @@ import './timetable.css'
 const DAYS = ['월', '화', '수', '목', '금']
 
 export default function Timetable() {
-  const { user, profile } = useAuth()
+  const { user } = useAuth()
   const approvedUsers = useApprovedUsers()
   const [filterUid, setFilterUid] = useState('all')
   const [allTimetables, setAllTimetables] = useState({}) // uid -> { displayName, cells }
@@ -25,15 +25,6 @@ export default function Timetable() {
     return unsub
   }, [])
 
-  const myCells = allTimetables[user.uid]?.cells || {}
-
-  const saveCells = async (next) => {
-    await setDoc(doc(db, 'timetables', user.uid), {
-      displayName: profile?.displayName ?? '익명',
-      cells: next,
-    })
-  }
-
   const occupantsFor = (day, slot) => {
     const key = `${day}_${slot}`
     return Object.entries(allTimetables)
@@ -41,22 +32,26 @@ export default function Timetable() {
       .map(([uid, tt]) => ({ uid, displayName: tt.displayName ?? '이름없음', courseName: tt.cells[key] }))
   }
 
-  const handleCellClick = (day, slot) => {
-    const key = `${day}_${slot}`
-    if (myCells[key]) {
-      if (!confirm(`${day}요일 ${slot} 내 일정 "${myCells[key]}"을(를) 삭제할까요?`)) return
-      const next = { ...myCells }
-      delete next[key]
-      saveCells(next)
-    } else {
-      setAddTarget({ day, slot })
-    }
+  const handleAddClass = async (targetUid, day, slots, courseName) => {
+    const targetDoc = allTimetables[targetUid] || {}
+    const next = { ...(targetDoc.cells || {}) }
+    slots.forEach((slot) => (next[`${day}_${slot}`] = courseName))
+    const targetUser = approvedUsers.find((u) => u.id === targetUid)
+    await setDoc(doc(db, 'timetables', targetUid), {
+      displayName: targetDoc.displayName || targetUser?.displayName || '익명',
+      cells: next,
+    })
   }
 
-  const handleAddClass = (day, slots, name) => {
-    const next = { ...myCells }
-    slots.forEach((slot) => (next[`${day}_${slot}`] = name))
-    saveCells(next)
+  const handleDeleteOccupant = async (occupant, day, slot) => {
+    if (!confirm(`${occupant.displayName}님의 ${day}요일 ${slot} "${occupant.courseName}"을(를) 삭제할까요?`)) return
+    const targetDoc = allTimetables[occupant.uid] || {}
+    const next = { ...(targetDoc.cells || {}) }
+    delete next[`${day}_${slot}`]
+    await setDoc(doc(db, 'timetables', occupant.uid), {
+      displayName: targetDoc.displayName || occupant.displayName,
+      cells: next,
+    })
   }
 
   return (
@@ -71,7 +66,7 @@ export default function Timetable() {
           ))}
         </select>
         <button className="new-btn" onClick={() => setAddTarget({ day: DAYS[0], slot: TIME_SLOTS[0] })}>
-          + 내 수업 추가
+          시간표 추가
         </button>
       </div>
 
@@ -95,7 +90,7 @@ export default function Timetable() {
                     <td
                       key={day}
                       className="tt-cell editable"
-                      onClick={() => handleCellClick(day, slot)}
+                      onClick={() => setAddTarget({ day, slot })}
                     >
                       <div className="tt-occupants">
                         {occupants.map((o) => (
@@ -106,6 +101,16 @@ export default function Timetable() {
                             title={`${o.displayName} · ${o.courseName}`}
                           >
                             {o.displayName}
+                            <button
+                              type="button"
+                              className="tt-chip-remove"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDeleteOccupant(o, day, slot)
+                              }}
+                            >
+                              ×
+                            </button>
                           </span>
                         ))}
                       </div>
@@ -122,6 +127,8 @@ export default function Timetable() {
         <AddClassModal
           initialDay={addTarget.day}
           initialSlot={addTarget.slot}
+          approvedUsers={approvedUsers}
+          defaultUid={user.uid}
           onSave={handleAddClass}
           onClose={() => setAddTarget(null)}
         />

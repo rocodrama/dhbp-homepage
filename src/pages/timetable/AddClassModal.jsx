@@ -5,26 +5,36 @@ import './timetable.css'
 
 const DAYS = ['월', '화', '수', '목', '금']
 
-export default function AddClassModal({ initialDay, initialSlot, onSave, onClose }) {
+export default function AddClassModal({ initialDay, initialSlot, approvedUsers, defaultUid, onSave, onClose }) {
+  const [targetUid, setTargetUid] = useState(defaultUid)
   const [day, setDay] = useState(initialDay)
   const [startSlot, setStartSlot] = useState(initialSlot)
   const [endSlot, setEndSlot] = useState(initialSlot)
-  const [name, setName] = useState('')
+  const [courseName, setCourseName] = useState('')
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!name.trim()) return
+    if (!courseName.trim()) return
     const startIdx = TIME_SLOTS.indexOf(startSlot)
     const endIdx = TIME_SLOTS.indexOf(endSlot)
     const [from, to] = startIdx <= endIdx ? [startIdx, endIdx] : [endIdx, startIdx]
     const slots = TIME_SLOTS.slice(from, to + 1)
-    onSave(day, slots, name.trim())
+    onSave(targetUid, day, slots, courseName.trim())
     onClose()
   }
 
   return (
     <Modal onClose={onClose}>
       <form className="modal-form" onSubmit={handleSubmit}>
+        <label>이름</label>
+        <select value={targetUid} onChange={(e) => setTargetUid(e.target.value)}>
+          {approvedUsers.map((u) => (
+            <option key={u.id} value={u.id}>
+              {u.displayName}
+            </option>
+          ))}
+        </select>
+
         <label>요일</label>
         <select value={day} onChange={(e) => setDay(e.target.value)}>
           {DAYS.map((d) => (
@@ -53,7 +63,7 @@ export default function AddClassModal({ initialDay, initialSlot, onSave, onClose
         </select>
 
         <label>수업명</label>
-        <input value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
+        <input value={courseName} onChange={(e) => setCourseName(e.target.value)} required autoFocus />
 
         <div className="form-actions">
           <button type="submit" className="btn-primary">

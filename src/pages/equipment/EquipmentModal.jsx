@@ -12,7 +12,16 @@ const emptyDraft = {
   ownerId: '',
   status: '사용가능',
   note: '',
-  specs: { cpu: '', ram: '', gpu: '', storage: '', purchaseDate: '', maintenanceLog: '' },
+  specs: {
+    cpu: '',
+    ram: '',
+    ramSlots: '',
+    ramType: '',
+    gpu: '',
+    storage: '',
+    purchaseDate: '',
+    maintenanceLog: '',
+  },
 }
 
 export default function EquipmentModal({ equipment, approvedUsers, onClose }) {
@@ -65,7 +74,9 @@ export default function EquipmentModal({ equipment, approvedUsers, onClose }) {
     draft.type === '개인 PC'
       ? [
           ['cpu', 'CPU'],
-          ['ram', 'RAM'],
+          ['ram', 'RAM 용량'],
+          ['ramSlots', '램 슬롯 (사용/전체)'],
+          ['ramType', '메모리 타입 (DDR4/DDR5)'],
           ['gpu', 'GPU'],
           ['storage', '저장장치'],
           ['purchaseDate', '구매일'],
