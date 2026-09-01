@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { DAYS, TIME_SLOTS, colorForName } from './constants'
 import { layoutWeek } from './layout'
 import AddClassModal from './AddClassModal'
-import PersonModal from './PersonModal'
+import EntryModal from './EntryModal'
 import './timetable.css'
 
 function slotKey(day, slot) {
@@ -50,7 +50,7 @@ export default function Timetable() {
   const [selectMode, setSelectMode] = useState(false)
   const [selected, setSelected] = useState(new Set())
   const [multiName, setMultiName] = useState('')
-  const [clicked, setClicked] = useState(null) // { name, id } | null
+  const [clickedId, setClickedId] = useState(null)
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'timetableEntries'), (snap) => {
@@ -63,8 +63,9 @@ export default function Timetable() {
   const visibleEntries = entries.filter((e) => filterName === 'all' || e.name === filterName)
   // 클릭 시점 스냅샷을 들고 있으면 실시간 반영이 끊긴다(9b52c6f와 같은 함정).
   // 이름만 저장하고 매 렌더마다 다시 필터한다.
-  const selectedName = clicked?.name ?? null
-  const selectedEntries = selectedName ? entries.filter((e) => e.name === selectedName) : []
+  // id만 들고 있다가 매 렌더마다 다시 찾는다 — 클릭 시점 스냅샷을 들고 있으면
+  // 실시간 반영이 끊긴다(9b52c6f와 같은 함정).
+  const clickedEntry = clickedId ? entries.find((e) => e.id === clickedId) : null
   // 폭은 주 전체 기준으로 통일한다(한 명뿐인 날도 좁게 왼쪽 정렬)
   const { byDay, numLanes } = layoutWeek(visibleEntries, DAYS)
 
@@ -203,7 +204,7 @@ export default function Timetable() {
                   pointerEvents: selectMode ? 'none' : 'auto',
                 }}
                 title={e.label ? `${e.name} · ${e.label}` : e.name}
-                onClick={() => setClicked({ name: e.name, id: e.id })}
+                onClick={() => setClickedId(e.id)}
               >
                 <span className="tt-grid-entry-name">{e.name}</span>
                 {e.label && <span className="tt-grid-entry-badge" />}
@@ -223,13 +224,11 @@ export default function Timetable() {
         </div>
       </div>
 
-      {selectedName && selectedEntries.length > 0 && (
-        <PersonModal
-          name={selectedName}
-          entries={selectedEntries}
-          focusId={clicked.id}
+      {clickedEntry && (
+        <EntryModal
+          entry={clickedEntry}
           onDelete={handleDeleteEntry}
-          onClose={() => setClicked(null)}
+          onClose={() => setClickedId(null)}
         />
       )}
 
