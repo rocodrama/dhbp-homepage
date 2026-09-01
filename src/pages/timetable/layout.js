@@ -1,4 +1,4 @@
-import { TIME_SLOTS } from './constants.js'
+import { DAYS, TIME_SLOTS } from './constants.js'
 
 // 이름마다 레인(좌우로 나란한 칸)을 배정한다. 같은 사람의 블록은 하루 종일
 // 같은 폭·같은 위치에 놓이고, 시간이 실제로 겹치는 이름끼리만 다른 레인으로 밀린다.
@@ -46,4 +46,18 @@ export function layoutDayEntries(dayEntries) {
 
   const numLanes = laneOccupants.length || 1
   return withIdx.map((e) => ({ ...e, lane: laneOfName[e.name], numLanes }))
+}
+
+// 주 전체에서 가장 레인이 많은 날을 기준으로 폭을 통일한다.
+// 하루 단위로 폭을 잡으면 한 명뿐인 날은 블록이 칸을 꽉 채워버린다 —
+// 좁은 폭으로 왼쪽에 붙이고 오른쪽은 비워두는 편이 보기 좋다.
+export function layoutWeek(entries, days = DAYS) {
+  const byDay = {}
+  let numLanes = 1
+  for (const day of days) {
+    const laid = layoutDayEntries(entries.filter((e) => e.day === day))
+    byDay[day] = laid
+    if (laid.length) numLanes = Math.max(numLanes, laid[0].numLanes)
+  }
+  return { byDay, numLanes }
 }

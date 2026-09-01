@@ -3,7 +3,7 @@ import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp } from 
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import { DAYS, TIME_SLOTS, colorForName } from './constants'
-import { layoutDayEntries } from './layout'
+import { layoutWeek } from './layout'
 import AddClassModal from './AddClassModal'
 import PersonModal from './PersonModal'
 import './timetable.css'
@@ -50,7 +50,7 @@ export default function Timetable() {
   const [selectMode, setSelectMode] = useState(false)
   const [selected, setSelected] = useState(new Set())
   const [multiName, setMultiName] = useState('')
-  const [selectedName, setSelectedName] = useState(null)
+  const [clicked, setClicked] = useState(null) // { name, id } | null
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'timetableEntries'), (snap) => {
@@ -63,7 +63,10 @@ export default function Timetable() {
   const visibleEntries = entries.filter((e) => filterName === 'all' || e.name === filterName)
   // 클릭 시점 스냅샷을 들고 있으면 실시간 반영이 끊긴다(9b52c6f와 같은 함정).
   // 이름만 저장하고 매 렌더마다 다시 필터한다.
+  const selectedName = clicked?.name ?? null
   const selectedEntries = selectedName ? entries.filter((e) => e.name === selectedName) : []
+  // 폭은 주 전체 기준으로 통일한다(한 명뿐인 날도 좁게 왼쪽 정렬)
+  const { byDay, numLanes } = layoutWeek(visibleEntries, DAYS)
 
   const handleAddClass = async (name, day, slots, label = '') => {
     await addDoc(collection(db, 'timetableEntries'), {
@@ -187,25 +190,23 @@ export default function Timetable() {
           )}
 
           {DAYS.map((day, di) =>
-            layoutDayEntries(visibleEntries.filter((e) => e.day === day)).map((e) => (
+            byDay[day].map((e) => (
               <div
                 key={e.id}
                 className="tt-grid-entry"
                 style={{
                   gridColumn: di + 2,
                   gridRow: `${e.start + 2} / span ${e.end - e.start + 1}`,
-                  width: `calc(${100 / e.numLanes}% - 3px)`,
-                  marginLeft: `calc(${100 / e.numLanes}% * ${e.lane})`,
+                  width: `calc(${100 / numLanes}% - 3px)`,
+                  marginLeft: `calc(${100 / numLanes}% * ${e.lane})`,
                   background: colorForName(e.name),
                   pointerEvents: selectMode ? 'none' : 'auto',
                 }}
                 title={e.label ? `${e.name} · ${e.label}` : e.name}
-                onClick={() => setSelectedName(e.name)}
+                onClick={() => setClicked({ name: e.name, id: e.id })}
               >
                 <span className="tt-grid-entry-name">{e.name}</span>
-                {e.label && e.end > e.start && (
-                  <span className="tt-grid-entry-label">{e.label}</span>
-                )}
+                {e.label && <span className="tt-grid-entry-badge" />}
                 <button
                   type="button"
                   className="tt-chip-remove"
@@ -226,8 +227,9 @@ export default function Timetable() {
         <PersonModal
           name={selectedName}
           entries={selectedEntries}
+          focusId={clicked.id}
           onDelete={handleDeleteEntry}
-          onClose={() => setSelectedName(null)}
+          onClose={() => setClicked(null)}
         />
       )}
 

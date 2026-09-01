@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { doc, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import Modal from '../../components/Modal'
@@ -8,12 +8,24 @@ import './timetable.css'
 const slotStart = (slot) => slot.split('-')[0]
 const slotEnd = (slot) => slot.split('-')[1]
 
-export default function PersonModal({ name, entries, onDelete, onClose }) {
+export default function PersonModal({ name, entries, focusId, onDelete, onClose }) {
+  const focusRef = useRef(null)
   // entries는 부모가 매 렌더마다 다시 필터해서 넘긴다(실시간 반영).
   const [labels, setLabels] = useState(() =>
     Object.fromEntries(entries.map((e) => [e.id, e.label ?? '']))
   )
   const [saving, setSaving] = useState(false)
+
+  // 클릭해서 들어온 블록의 입력칸에 자동 포커스 + 스크롤. 같은 이름이라도
+  // id별로 시간대가 나뉘어 있어(예: 9-12시/12-16시/16-18시), 어떤 항목을
+  // 눌러 들어왔는지 바로 알 수 있어야 한다.
+  const focusInput = (el) => {
+    if (el && focusId && !focusRef.current) {
+      focusRef.current = el
+      el.focus()
+      el.scrollIntoView({ block: 'nearest' })
+    }
+  }
 
   const sorted = [...entries].sort(
     (a, b) =>
@@ -46,11 +58,12 @@ export default function PersonModal({ name, entries, onDelete, onClose }) {
       </p>
 
       {sorted.map((e) => (
-        <div key={e.id} className="tt-person-row">
+        <div key={e.id} className={'tt-person-row' + (e.id === focusId ? ' focused' : '')}>
           <div className="tt-person-when">
             <b>{e.day}</b> {slotStart(e.slots[0])}-{slotEnd(e.slots[e.slots.length - 1])}
           </div>
           <input
+            ref={e.id === focusId ? focusInput : undefined}
             value={labels[e.id] ?? ''}
             placeholder="수업명 또는 메모"
             onChange={(ev) => setLabels((prev) => ({ ...prev, [e.id]: ev.target.value }))}

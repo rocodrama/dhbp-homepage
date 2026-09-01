@@ -42,3 +42,24 @@ const seq = layoutDayEntries([
 assert.equal(seq[0].numLanes, 1)
 
 console.log('시간표 레이아웃 검증 통과')
+
+// ---- 주 전체 기준 폭 (혼자인 날은 좁게 왼쪽 정렬) ----
+import { layoutWeek } from '../src/pages/timetable/layout.js'
+
+const week = layoutWeek(
+  [
+    // 화요일: 3명이 겹침 -> numLanes 3
+    { id: 1, name: '가영', day: '화', slots: slot('09:00-09:30', '10:00-10:30') },
+    { id: 2, name: '나윤', day: '화', slots: slot('09:00-09:30', '10:00-10:30') },
+    { id: 3, name: '다은', day: '화', slots: slot('09:00-09:30', '10:00-10:30') },
+    // 월요일: 혼자
+    { id: 4, name: '가영', day: '월', slots: slot('09:00-09:30', '10:00-10:30') },
+  ],
+  ['월', '화', '수', '목', '금']
+)
+assert.equal(week.numLanes, 3, '주 전체에서 가장 붐비는 날 기준으로 폭이 통일돼야 한다')
+// 렌더에는 week.numLanes(주 전체 값)를 쓴다 — 혼자인 날도 같은 폭이라 왼쪽으로 좁게 붙는다
+assert.equal(week.numLanes, 3)
+assert.equal(week.byDay['월'][0].lane, 0)
+
+console.log('시간표 주 단위 레이아웃 검증 통과')
