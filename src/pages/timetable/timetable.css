@@ -20,12 +20,15 @@
   border-radius: 12px;
   overflow-x: auto;
   padding: 12px;
+  /* 넓은 모니터에서 표가 끝없이 늘어나지 않게. 열 폭이 계산 가능해져서
+     이름을 가로쓰기로 넣을 수 있다. */
+  max-width: 1100px;
 }
 
 .tt-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 70px repeat(5, minmax(90px, 1fr));
+  grid-template-columns: 56px repeat(5, minmax(110px, 1fr));
   font-size: 12px;
 }
 
@@ -34,10 +37,19 @@
 .tt-grid-time-label {
   border: 1px solid var(--color-border);
   background: var(--color-card-bg);
-  color: var(--color-text-gray);
+  color: var(--color-text-dark);
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.tt-grid-day-label {
+  font-weight: 600;
+}
+
+.tt-grid-time-label {
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .tt-grid-bg-cell {
@@ -60,24 +72,37 @@
   justify-self: start;
   margin: 1px 0;
   border-radius: 6px;
-  color: #fff;
+  /* 파스텔 배경 위 진한 글씨 — 흰 글씨는 대비가 3:1도 안 나오는 색이 많았다 */
+  color: var(--color-text-dark);
   font-weight: 600;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 6px 2px;
+  gap: 2px;
+  padding: 4px 3px;
   overflow: hidden;
   text-align: center;
+  cursor: pointer;
 }
 
 .tt-grid-entry-name {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
-  letter-spacing: 1px;
-  font-size: 11px;
+  font-size: 13px;
+  line-height: 1.2;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-height: 100%;
+  white-space: nowrap;
+}
+
+.tt-grid-entry-label {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.75;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tt-chip-remove {
@@ -85,8 +110,8 @@
   top: 2px;
   right: 2px;
   border: none;
-  background: rgba(255, 255, 255, 0.3);
-  color: #fff;
+  background: rgba(0, 0, 0, 0.14);
+  color: var(--color-text-dark);
   width: 14px;
   height: 14px;
   line-height: 1;
@@ -98,7 +123,7 @@
 }
 
 .tt-chip-remove:hover {
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .tt-multi-bar {
@@ -125,4 +150,47 @@
   font-size: 12px;
   color: var(--color-text-gray);
   margin: -8px 0 12px;
+}
+
+/* ---- 인원 상세 모달 ---- */
+.tt-person-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.tt-person-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.tt-person-when {
+  font-size: 12px;
+  color: var(--color-text-gray);
+  white-space: nowrap;
+  min-width: 96px;
+}
+
+.tt-person-row input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 13px;
+}
+
+.tt-person-del {
+  border: none;
+  background: none;
+  color: var(--color-text-gray);
+  font-size: 14px;
+  line-height: 1;
+  padding: 4px;
 }

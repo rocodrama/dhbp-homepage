@@ -1,12 +1,11 @@
 import { useState } from 'react'
 import Modal from '../../components/Modal'
-import { TIME_SLOTS } from './constants'
+import { DAYS, TIME_SLOTS } from './constants'
 import './timetable.css'
-
-const DAYS = ['월', '화', '수', '목', '금']
 
 export default function AddClassModal({ initialDay, initialSlot, onSave, onClose }) {
   const [name, setName] = useState('')
+  const [label, setLabel] = useState('')
   const [day, setDay] = useState(initialDay)
   const [startSlot, setStartSlot] = useState(initialSlot)
   const [endSlot, setEndSlot] = useState(initialSlot)
@@ -18,7 +17,7 @@ export default function AddClassModal({ initialDay, initialSlot, onSave, onClose
     const endIdx = TIME_SLOTS.indexOf(endSlot)
     const [from, to] = startIdx <= endIdx ? [startIdx, endIdx] : [endIdx, startIdx]
     const slots = TIME_SLOTS.slice(from, to + 1)
-    onSave(name.trim(), day, slots)
+    onSave(name.trim(), day, slots, label.trim())
     onClose()
   }
 
@@ -27,6 +26,9 @@ export default function AddClassModal({ initialDay, initialSlot, onSave, onClose
       <form className="modal-form" onSubmit={handleSubmit}>
         <label>이름</label>
         <input value={name} onChange={(e) => setName(e.target.value)} required autoFocus />
+
+        <label>수업명 또는 메모 (선택)</label>
+        <input value={label} onChange={(e) => setLabel(e.target.value)} />
 
         <label>요일</label>
         <select value={day} onChange={(e) => setDay(e.target.value)}>

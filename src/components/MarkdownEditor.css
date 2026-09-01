@@ -34,6 +34,23 @@
   font-weight: 600;
 }
 
+.md-btn {
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  color: var(--color-text-dark);
+  min-width: 30px;
+  height: 28px;
+  padding: 0 7px;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.md-btn:hover {
+  border-color: var(--color-navy);
+  color: var(--color-navy);
+}
+
 .md-textarea {
   width: 100%;
   min-height: 400px;
@@ -50,29 +67,4 @@
   padding: 16px 24px;
   line-height: 1.7;
   font-size: 14px;
-}
-
-.md-preview img {
-  max-width: 100%;
-  border-radius: 8px;
-}
-
-.md-preview pre {
-  background: var(--color-card-bg);
-  padding: 12px;
-  border-radius: 8px;
-  overflow-x: auto;
-}
-
-.md-preview code {
-  background: var(--color-card-bg);
-  padding: 2px 5px;
-  border-radius: 4px;
-}
-
-.md-preview blockquote {
-  border-left: 3px solid var(--color-skyblue);
-  margin: 0;
-  padding-left: 14px;
-  color: var(--color-text-gray);
 }

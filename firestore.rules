@@ -104,7 +104,9 @@ service cloud.firestore {
       allow read: if isApproved();
       allow create: if isApproved();
       allow delete: if isApproved();
-      allow update: if false;
+      // 수업명/메모(label)는 다 같이 관리하는 값이라 승인된 회원이면 누구나 수정 가능
+      // (tasks/restaurants와 동일한 신뢰 수준)
+      allow update: if isApproved();
     }
 
     // 민원처리함 (기획서 4.8) — 조회는 승인된 회원 전체(공개 처리 현황판),

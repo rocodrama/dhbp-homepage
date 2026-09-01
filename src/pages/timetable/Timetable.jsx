@@ -2,48 +2,11 @@ import { useEffect, useState } from 'react'
 import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
-import { TIME_SLOTS, PERSON_COLORS } from './constants'
+import { DAYS, TIME_SLOTS, colorForName } from './constants'
+import { layoutDayEntries } from './layout'
 import AddClassModal from './AddClassModal'
+import PersonModal from './PersonModal'
 import './timetable.css'
-
-const DAYS = ['월', '화', '수', '목', '금']
-
-// Assigns each NAME a lane (side-by-side column) for the day, so every block
-// belonging to the same person sits at the same width/position all day —
-// only names whose time ranges actually overlap are forced into different lanes.
-function layoutDayEntries(dayEntries) {
-  const withIdx = dayEntries.map((e) => ({
-    ...e,
-    start: TIME_SLOTS.indexOf(e.slots[0]),
-    end: TIME_SLOTS.indexOf(e.slots[e.slots.length - 1]),
-  }))
-
-  const slotsByName = {}
-  withIdx.forEach((e) => {
-    const set = (slotsByName[e.name] ??= new Set())
-    for (let i = e.start; i <= e.end; i++) set.add(i)
-  })
-
-  const conflicts = (a, b) => {
-    for (const i of slotsByName[a]) if (slotsByName[b].has(i)) return true
-    return false
-  }
-
-  const laneOfName = {}
-  const laneOccupants = [] // laneOccupants[lane] = names already placed in that lane
-  for (const name of Object.keys(slotsByName).sort()) {
-    let lane = laneOccupants.findIndex((names) => !names.some((other) => conflicts(name, other)))
-    if (lane === -1) {
-      lane = laneOccupants.length
-      laneOccupants.push([])
-    }
-    laneOccupants[lane].push(name)
-    laneOfName[name] = lane
-  }
-
-  const numLanes = laneOccupants.length || 1
-  return withIdx.map((e) => ({ ...e, lane: laneOfName[e.name], numLanes }))
-}
 
 function slotKey(day, slot) {
   return `${day}__${slot}`
@@ -87,6 +50,7 @@ export default function Timetable() {
   const [selectMode, setSelectMode] = useState(false)
   const [selected, setSelected] = useState(new Set())
   const [multiName, setMultiName] = useState('')
+  const [selectedName, setSelectedName] = useState(null)
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'timetableEntries'), (snap) => {
@@ -96,14 +60,17 @@ export default function Timetable() {
   }, [])
 
   const names = [...new Set(entries.map((e) => e.name))].sort()
-  const colorForName = (name) => PERSON_COLORS[names.indexOf(name) % PERSON_COLORS.length]
   const visibleEntries = entries.filter((e) => filterName === 'all' || e.name === filterName)
+  // 클릭 시점 스냅샷을 들고 있으면 실시간 반영이 끊긴다(9b52c6f와 같은 함정).
+  // 이름만 저장하고 매 렌더마다 다시 필터한다.
+  const selectedEntries = selectedName ? entries.filter((e) => e.name === selectedName) : []
 
-  const handleAddClass = async (name, day, slots) => {
+  const handleAddClass = async (name, day, slots, label = '') => {
     await addDoc(collection(db, 'timetableEntries'), {
       name,
       day,
       slots,
+      label,
       createdBy: user.uid,
       createdAt: serverTimestamp(),
     })
@@ -145,6 +112,7 @@ export default function Timetable() {
           name: multiName.trim(),
           day: r.day,
           slots: r.slots,
+          label: '',
           createdBy: user.uid,
           createdAt: serverTimestamp(),
         })
@@ -200,7 +168,7 @@ export default function Timetable() {
           ))}
           {TIME_SLOTS.map((slot, si) => (
             <div key={slot} className="tt-grid-time-label" style={{ gridColumn: 1, gridRow: si + 2 }}>
-              {slot}
+              {slot.split('-')[0]}
             </div>
           ))}
 
@@ -231,9 +199,13 @@ export default function Timetable() {
                   background: colorForName(e.name),
                   pointerEvents: selectMode ? 'none' : 'auto',
                 }}
-                title={e.name}
+                title={e.label ? `${e.name} · ${e.label}` : e.name}
+                onClick={() => setSelectedName(e.name)}
               >
                 <span className="tt-grid-entry-name">{e.name}</span>
+                {e.label && e.end > e.start && (
+                  <span className="tt-grid-entry-label">{e.label}</span>
+                )}
                 <button
                   type="button"
                   className="tt-chip-remove"
@@ -249,6 +221,15 @@ export default function Timetable() {
           )}
         </div>
       </div>
+
+      {selectedName && selectedEntries.length > 0 && (
+        <PersonModal
+          name={selectedName}
+          entries={selectedEntries}
+          onDelete={handleDeleteEntry}
+          onClose={() => setSelectedName(null)}
+        />
+      )}
 
       {addTarget && (
         <AddClassModal
