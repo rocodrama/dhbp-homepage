@@ -63,3 +63,18 @@ assert.equal(week.numLanes, 3)
 assert.equal(week.byDay['월'][0].lane, 0)
 
 console.log('시간표 주 단위 레이아웃 검증 통과')
+
+// ---- 모바일 요일 탭: 하루만 넘기면 그날 기준으로 폭이 잡힌다 ----
+const oneDay = layoutWeek(
+  [
+    { id: 1, name: '가영', day: '월', slots: slot('09:00-09:30', '10:00-10:30') },
+    // 다른 날이 붐벼도 월요일 폭에 영향을 주면 안 된다
+    { id: 2, name: '나윤', day: '화', slots: slot('09:00-09:30', '10:00-10:30') },
+    { id: 3, name: '다은', day: '화', slots: slot('09:00-09:30', '10:00-10:30') },
+  ],
+  ['월']
+)
+assert.equal(oneDay.numLanes, 1, '하루만 볼 때는 그날 레인 수만 반영해야 한다')
+assert.deepEqual(Object.keys(oneDay.byDay), ['월'])
+
+console.log('시간표 단일 요일 레이아웃 검증 통과')

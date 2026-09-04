@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import Modal from '../../components/Modal'
 import './calendar.css'
 
-export default function DayModal({ dateStr, events, onClose }) {
+export default function DayModal({ dateStr, events, calendar, onClose }) {
   const { user, profile, isAdmin } = useAuth()
   const [title, setTitle] = useState('')
   const [time, setTime] = useState('')
@@ -19,6 +19,7 @@ export default function DayModal({ dateStr, events, onClose }) {
     setSaving(true)
     await addDoc(collection(db, 'events'), {
       title: title.trim(),
+      calendar,
       startDate: dateStr,
       endDate: finalEndDate,
       time: time || null,
@@ -39,7 +40,9 @@ export default function DayModal({ dateStr, events, onClose }) {
 
   return (
     <Modal onClose={onClose}>
-      <h2 className="section-title">{dateStr}</h2>
+      <h2 className="section-title">
+        {dateStr} <span style={{ color: 'var(--color-text-gray)' }}>· {calendar}</span>
+      </h2>
 
       {events.length === 0 ? (
         <p style={{ color: 'var(--color-text-gray)', fontSize: 13 }}>등록된 일정이 없어요.</p>

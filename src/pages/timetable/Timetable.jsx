@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { addDoc, collection, deleteDoc, doc, onSnapshot, serverTimestamp } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
@@ -11,6 +11,16 @@ import './timetable.css'
 function slotKey(day, slot) {
   return `${day}__${slot}`
 }
+
+// AppShell과 같은 브레이크포인트. 모바일에서는 요일 탭으로 하루씩만 보여준다.
+const MQ = window.matchMedia('(max-width: 768px)')
+const subscribeMQ = (cb) => {
+  MQ.addEventListener('change', cb)
+  return () => MQ.removeEventListener('change', cb)
+}
+
+// 오늘이 주말이면 월요일부터
+const todayDay = DAYS[new Date().getDay() - 1] ?? DAYS[0]
 
 // Splits a set of selected (day, slot) keys into contiguous per-day runs,
 // so one multi-select action can create several non-contiguous blocks at once.
@@ -51,6 +61,8 @@ export default function Timetable() {
   const [selected, setSelected] = useState(new Set())
   const [multiName, setMultiName] = useState('')
   const [clickedId, setClickedId] = useState(null)
+  const narrow = useSyncExternalStore(subscribeMQ, () => MQ.matches)
+  const [mobileDay, setMobileDay] = useState(todayDay)
 
   useEffect(() => {
     const unsub = onSnapshot(collection(db, 'timetableEntries'), (snap) => {
@@ -66,8 +78,10 @@ export default function Timetable() {
   // id만 들고 있다가 매 렌더마다 다시 찾는다 — 클릭 시점 스냅샷을 들고 있으면
   // 실시간 반영이 끊긴다(9b52c6f와 같은 함정).
   const clickedEntry = clickedId ? entries.find((e) => e.id === clickedId) : null
-  // 폭은 주 전체 기준으로 통일한다(한 명뿐인 날도 좁게 왼쪽 정렬)
-  const { byDay, numLanes } = layoutWeek(visibleEntries, DAYS)
+  // 폭은 보이는 날들 기준으로 통일한다(한 명뿐인 날도 좁게 왼쪽 정렬).
+  // 모바일은 하루만 보이니 그날 기준 -> 블록이 칸을 넓게 쓴다.
+  const shownDays = narrow ? [mobileDay] : DAYS
+  const { byDay, numLanes } = layoutWeek(visibleEntries, shownDays)
 
   const handleAddClass = async (name, day, slots, label = '') => {
     await addDoc(collection(db, 'timetableEntries'), {
@@ -139,7 +153,7 @@ export default function Timetable() {
 
         {!selectMode ? (
           <>
-            <button className="new-btn" onClick={() => setAddTarget({ day: DAYS[0], slot: TIME_SLOTS[0] })}>
+            <button className="new-btn" onClick={() => setAddTarget({ day: shownDays[0], slot: TIME_SLOTS[0] })}>
               시간표 추가
             </button>
             <button className="btn-secondary" onClick={() => setSelectMode(true)}>
@@ -162,10 +176,31 @@ export default function Timetable() {
 
       {selectMode && <p className="tt-multi-hint">추가할 칸들을 클릭해서 선택한 다음, 이름을 입력하고 추가를 눌러줘.</p>}
 
+      {narrow && (
+        <div className="tt-day-tabs">
+          {DAYS.map((d) => (
+            <button
+              key={d}
+              type="button"
+              className={'tt-day-tab' + (d === mobileDay ? ' active' : '')}
+              onClick={() => setMobileDay(d)}
+            >
+              {d}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="tt-table-wrap">
-        <div className="tt-grid" style={{ gridTemplateRows: `40px repeat(${TIME_SLOTS.length}, 56px)` }}>
+        <div
+          className="tt-grid"
+          style={{
+            gridTemplateColumns: `${narrow ? 44 : 56}px repeat(${shownDays.length}, minmax(${narrow ? 0 : 130}px, 1fr))`,
+            gridTemplateRows: `40px repeat(${TIME_SLOTS.length}, ${narrow ? 48 : 56}px)`,
+          }}
+        >
           <div className="tt-grid-corner" style={{ gridColumn: 1, gridRow: 1 }} />
-          {DAYS.map((d, di) => (
+          {shownDays.map((d, di) => (
             <div key={d} className="tt-grid-day-label" style={{ gridColumn: di + 2, gridRow: 1 }}>
               {d}
             </div>
@@ -176,7 +211,7 @@ export default function Timetable() {
             </div>
           ))}
 
-          {DAYS.map((day, di) =>
+          {shownDays.map((day, di) =>
             TIME_SLOTS.map((slot, si) => {
               const isSelected = selected.has(slotKey(day, slot))
               return (
@@ -190,7 +225,7 @@ export default function Timetable() {
             })
           )}
 
-          {DAYS.map((day, di) =>
+          {shownDays.map((day, di) =>
             byDay[day].map((e) => (
               <div
                 key={e.id}

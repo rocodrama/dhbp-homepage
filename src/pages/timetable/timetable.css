@@ -2,6 +2,7 @@
 
 .tt-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: center;
   margin-bottom: 16px;
@@ -20,14 +21,11 @@
   border-radius: 12px;
   overflow-x: auto;
   padding: 12px;
-  /* 넓은 모니터에서 표가 끝없이 늘어나지 않게 상한만 둔다 */
-  max-width: 1600px;
 }
 
 .tt-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 56px repeat(5, minmax(130px, 1fr));
   font-size: 12px;
 }
 
@@ -160,4 +158,49 @@
   border-radius: 50%;
   margin-right: 8px;
   vertical-align: middle;
+}
+
+/* 모바일 요일 탭 — 폰에서는 5일을 한 화면에 넣으면 한 칸이 60px 아래로 떨어져서
+   이름이 안 읽힌다. 하루씩 전체 폭으로 보여주고 요일은 탭으로 바꾼다. */
+.tt-day-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.tt-day-tab {
+  flex: 1;
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--color-text-dark);
+}
+
+.tt-day-tab.active {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  color: #fff;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .tt-table-wrap {
+    padding: 8px;
+  }
+
+  /* 한 요일이 화면 전체 폭이라 가로쓰기가 세로쓰기보다 잘 읽힌다 */
+  .tt-grid-entry-name {
+    writing-mode: horizontal-tb;
+    text-orientation: initial;
+    letter-spacing: 0;
+    max-height: none;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .tt-grid-time-label {
+    font-size: 10px;
+  }
 }

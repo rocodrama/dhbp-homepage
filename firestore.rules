@@ -98,6 +98,16 @@ service cloud.firestore {
         && (resource.data.authorId == request.auth.uid || isApprovedAdmin());
     }
 
+    // 캘린더 목록 (기획서 4.6 확장) — 이름은 자유 입력(가입 여부 무관),
+    // timetableEntries와 같은 신뢰 수준. 기본 캘린더 '공식'은 문서 없이 항상
+    // 존재하므로 여기 저장하지 않는다.
+    match /calendars/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.createdBy == request.auth.uid;
+      allow delete: if isApproved()
+        && (resource.data.createdBy == request.auth.uid || isApprovedAdmin());
+    }
+
     // 학기 시간표 (기획서 4.9) — 이름은 자유 입력(가입 여부 무관), 항목 단위 문서
     // 조회/작성/삭제 모두 승인된 회원 전체
     match /timetableEntries/{entryId} {
