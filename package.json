@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "check": "node scripts/check-markdown.mjs && node scripts/check-timetable.mjs"
+    "check": "node scripts/check-markdown.mjs && node scripts/check-timetable.mjs && node scripts/check-ranking.mjs"
   },
   "dependencies": {
     "dompurify": "^3.4.14",

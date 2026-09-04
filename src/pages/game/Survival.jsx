@@ -1,6 +1,9 @@
 import { useRef, useState } from 'react'
 import NameInput from './NameInput'
+import RankPicker from './RankPicker'
+import RankResults from './RankResults'
 import { assignCharacters } from './characters'
+import { clampRank, withRanks } from './ranking'
 
 const ROUND_DELAY = 1600
 
@@ -9,13 +12,25 @@ export default function Survival() {
   const [players, setPlayers] = useState(null) // [{name, emoji}]
   const [eliminated, setEliminated] = useState(new Set())
   const [running, setRunning] = useState(false)
-  const [winner, setWinner] = useState(null)
+  const [ranking, setRanking] = useState(null)
   const [round, setRound] = useState(0)
+  const [rank, setRank] = useState(1)
   const timeoutRef = useRef(null)
 
-  const runRound = (alive, eliminatedSoFar) => {
+  // outLog: [{ name, out }] — out은 탈락한 라운드. 늦게 탈락할수록 높은 등수.
+  // 한 라운드에 여러 명이 같이 떨어지므로 그 사람들은 공동 등수가 된다.
+  const runRound = (alive, eliminatedSoFar, roundNo, outLog) => {
     if (alive.length <= 1) {
-      setWinner(alive[0]?.name ?? null)
+      const rows = [...alive.map((p) => ({ name: p.name, out: Infinity })), ...outLog].sort(
+        (a, b) => b.out - a.out
+      )
+      setRanking(
+        withRanks(rows, (a, b) => a.out === b.out).map((r) => ({
+          name: r.name,
+          rank: r.rank,
+          detail: r.out === Infinity ? '최후의 1인' : `${r.out}라운드 탈락`,
+        }))
+      )
       setRunning(false)
       return
     }
@@ -30,9 +45,13 @@ export default function Survival() {
     const nextEliminated = new Set(eliminatedSoFar)
     out.forEach((p) => nextEliminated.add(p.name))
     setEliminated(nextEliminated)
-    setRound((r) => r + 1)
+    setRound(roundNo)
 
-    timeoutRef.current = setTimeout(() => runRound(survivors, nextEliminated), ROUND_DELAY)
+    const nextLog = [...outLog, ...out.map((p) => ({ name: p.name, out: roundNo }))]
+    timeoutRef.current = setTimeout(
+      () => runRound(survivors, nextEliminated, roundNo + 1, nextLog),
+      ROUND_DELAY
+    )
   }
 
   const start = () => {
@@ -43,18 +62,21 @@ export default function Survival() {
     const initial = assignCharacters(names)
     setPlayers(initial)
     setEliminated(new Set())
-    setWinner(null)
+    setRanking(null)
     setRound(0)
     setRunning(true)
-    timeoutRef.current = setTimeout(() => runRound(initial, new Set()), ROUND_DELAY)
+    timeoutRef.current = setTimeout(() => runRound(initial, new Set(), 1, []), ROUND_DELAY)
   }
 
   return (
     <div>
       <NameInput names={names} setNames={setNames} placeholder="참가자 이름 입력 후 추가" />
-      <button className="btn-primary" onClick={start} disabled={running} style={{ marginBottom: 16 }}>
-        {running ? `진행 중... (${round}라운드)` : '생존게임 시작'}
-      </button>
+      <div className="game-controls">
+        <RankPicker count={names.length} rank={rank} setRank={setRank} />
+        <button className="btn-primary" onClick={start} disabled={running}>
+          {running ? `진행 중... (${round}라운드)` : '생존게임 시작'}
+        </button>
+      </div>
 
       {players && (
         <div className="survival-grid">
@@ -62,7 +84,7 @@ export default function Survival() {
             const isOut = eliminated.has(p.name)
             return (
               <div
-                className={'survival-player' + (isOut ? ' out' : winner ? ' alive winner' : ' alive')}
+                className={'survival-player' + (isOut ? ' out' : ranking ? ' alive winner' : ' alive')}
                 key={p.name}
               >
                 <span className="survival-emoji">{p.emoji}</span>
@@ -73,7 +95,7 @@ export default function Survival() {
         </div>
       )}
 
-      {winner && <div className="result-banner">👑 {winner}</div>}
+      {ranking && <RankResults rows={ranking} targetRank={clampRank(rank, names.length)} />}
     </div>
   )
 }
