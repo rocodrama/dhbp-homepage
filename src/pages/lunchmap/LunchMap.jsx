@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import RestaurantModal from './RestaurantModal'
 import LunchPicker from './LunchPicker'
 import './lunchmap.css'
+import { EmptyState, Loading } from '../../components/Feedback'
 
 function mapUrlFor(r) {
   if (r.naverMapUrl && /^https?:\/\//i.test(r.naverMapUrl)) return r.naverMapUrl
@@ -64,12 +65,9 @@ export default function LunchMap() {
       </div>
 
       {loading ? (
-        <p>불러오는 중...</p>
+        <Loading />
       ) : restaurants.length === 0 ? (
-        <div className="empty-state">
-          <img src="/images/mascot.png" alt="" />
-          <p>아직 등록된 맛집이 없어요. 첫 맛집을 추천해보세요!</p>
-        </div>
+        <EmptyState>아직 등록된 맛집이 없어요. 첫 맛집을 추천해보세요!</EmptyState>
       ) : (
         <div className="restaurant-grid">
           {restaurants.map((r) => {

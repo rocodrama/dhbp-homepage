@@ -3,6 +3,7 @@ import { collection, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import './admin.css'
+import { Loading } from '../../components/Feedback'
 
 export default function UserManagement() {
   const { user, isAdmin } = useAuth()
@@ -18,7 +19,7 @@ export default function UserManagement() {
   }, [])
 
   if (!isAdmin) return <p>관리자만 접근할 수 있어요.</p>
-  if (loading) return <p>불러오는 중...</p>
+  if (loading) return <Loading />
 
   const pending = users.filter((u) => u.status === 'pending')
   const approved = users.filter((u) => u.status === 'approved')

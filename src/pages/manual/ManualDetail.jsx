@@ -6,12 +6,9 @@ import { useAuth } from '../../context/AuthContext'
 import { MANUAL_CATEGORIES } from './constants'
 import { useMarkdownHtml } from './useMarkdown'
 import MarkdownEditor from '../../components/MarkdownEditor'
+import { Loading } from '../../components/Feedback'
+import { formatDate } from '../calendar/dateUtils'
 import './manual.css'
-
-function formatDate(ts) {
-  if (!ts?.toDate) return ''
-  return ts.toDate().toLocaleDateString('ko-KR')
-}
 
 export default function ManualDetail() {
   const { id } = useParams()
@@ -30,7 +27,7 @@ export default function ManualDetail() {
     return unsub
   }, [id])
 
-  if (!manual) return <p>불러오는 중...</p>
+  if (!manual) return <Loading />
 
   const canEdit = user?.uid === manual.authorId || isAdmin
 

@@ -3,6 +3,7 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../../firebase'
 import TaskModal from './TaskModal'
 import './tasks.css'
+import { EmptyState, Loading } from '../../components/Feedback'
 
 export default function TaskList() {
   const [tasks, setTasks] = useState([])
@@ -29,12 +30,9 @@ export default function TaskList() {
       </div>
 
       {loading ? (
-        <p>불러오는 중...</p>
+        <Loading />
       ) : tasks.length === 0 ? (
-        <div className="empty-state">
-          <img src="/images/mascot.png" alt="" />
-          <p>등록된 미션이 없어요.</p>
-        </div>
+        <EmptyState>등록된 미션이 없어요.</EmptyState>
       ) : (
         <div className="item-list">
           {tasks.map((t) => {

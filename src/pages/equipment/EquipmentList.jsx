@@ -6,6 +6,7 @@ import { useApprovedUsers } from './useApprovedUsers'
 import { STATUS_TONE } from './constants'
 import EquipmentModal from './EquipmentModal'
 import './equipment.css'
+import { EmptyState, Loading } from '../../components/Feedback'
 
 export default function EquipmentList() {
   const { isAdmin } = useAuth()
@@ -34,12 +35,9 @@ export default function EquipmentList() {
       </div>
 
       {loading ? (
-        <p>불러오는 중...</p>
+        <Loading />
       ) : items.length === 0 ? (
-        <div className="empty-state">
-          <img src="/images/mascot.png" alt="" />
-          <p>등록된 장비가 없어요.</p>
-        </div>
+        <EmptyState>등록된 장비가 없어요.</EmptyState>
       ) : (
         <div className="equip-table-wrap">
           <table className="equip-table">

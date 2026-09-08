@@ -5,11 +5,8 @@ import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import { useMarkdownHtml } from '../manual/useMarkdown'
 import MarkdownEditor from '../../components/MarkdownEditor'
-
-function formatDate(ts) {
-  if (!ts?.toDate) return ''
-  return ts.toDate().toLocaleDateString('ko-KR')
-}
+import { Loading } from '../../components/Feedback'
+import { formatDate } from '../calendar/dateUtils'
 
 export default function BoardDetail() {
   const { id } = useParams()
@@ -28,7 +25,7 @@ export default function BoardDetail() {
     return unsub
   }, [id])
 
-  if (!post) return <p>불러오는 중...</p>
+  if (!post) return <Loading />
 
   const canEdit = user?.uid === post.authorId || isAdmin
 

@@ -4,6 +4,7 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { MANUAL_CATEGORIES } from './constants'
 import '../../pages/manual/manual.css'
+import { EmptyState, Loading } from '../../components/Feedback'
 
 export default function ManualList() {
   const [manuals, setManuals] = useState([])
@@ -61,12 +62,9 @@ export default function ManualList() {
       </div>
 
       {loading ? (
-        <p>불러오는 중...</p>
+        <Loading />
       ) : filtered.length === 0 ? (
-        <div className="empty-state">
-          <img src="/images/mascot.png" alt="" />
-          <p>아직 등록된 매뉴얼이 없어요. 첫 매뉴얼을 작성해보세요!</p>
-        </div>
+        <EmptyState>아직 등록된 매뉴얼이 없어요. 첫 매뉴얼을 작성해보세요!</EmptyState>
       ) : (
         <div className="item-list">
           {filtered.map((m) => (

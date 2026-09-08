@@ -1,20 +1,40 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(15, 23, 42, 0.45);
+  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  z-index: 100;
+  padding: var(--space-4);
+  background: var(--surface-scrim);
 }
 
 .modal-card {
-  background: var(--color-white);
-  border-radius: 16px;
-  padding: 28px;
   width: 100%;
   max-width: 480px;
+  /* dvh 를 vh 다음 줄에 둬서 점진 오버라이드가 되게 한다. 모바일 브라우저 크롬이
+     vh 짜리 모달의 하단을 잘라먹던 현존 버그를 이 한 줄이 고친다. */
   max-height: 85vh;
+  max-height: 85dvh;
+  padding: var(--space-6);
+  border-radius: var(--radius-container);
+  background: var(--surface-page);
+  box-shadow: var(--elevation-overlay);
   overflow-y: auto;
+}
+
+/* 모바일 정적 바텀시트. 드래그도 스냅 포인트도 JS도 없다 — 화면 아래에 붙고
+   위쪽만 둥글다. 손가락이 닿는 곳에서 열리는 게 가운데 뜨는 카드보다 낫다. */
+@media (max-width: 768px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal-card {
+    max-height: 90vh;
+    max-height: 90dvh;
+    padding: var(--space-4);
+    border-radius: var(--radius-container) var(--radius-container) 0 0;
+  }
 }

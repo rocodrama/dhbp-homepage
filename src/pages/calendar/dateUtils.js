@@ -38,3 +38,10 @@ export function getMonthMatrix(year, month) {
   for (let i = 0; i < cells.length; i += 7) weeks.push(cells.slice(i, i + 7))
   return weeks
 }
+
+// Firestore Timestamp → "2026. 9. 8." — board/manual 상세가 각각 복제하고 있었다.
+// 이 파일은 이미 캘린더 밖(timetable)에서도 쓰이므로 새 유틸 파일을 만들지 않는다.
+export function formatDate(ts) {
+  if (!ts?.toDate) return ''
+  return ts.toDate().toLocaleDateString('ko-KR')
+}

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../../firebase'
+import { EmptyState, Loading } from '../../components/Feedback'
 
 export default function BoardList() {
   const [posts, setPosts] = useState([])
@@ -40,12 +41,9 @@ export default function BoardList() {
       </div>
 
       {loading ? (
-        <p>불러오는 중...</p>
+        <Loading />
       ) : filtered.length === 0 ? (
-        <div className="empty-state">
-          <img src="/images/mascot.png" alt="" />
-          <p>아직 등록된 글이 없어요. 첫 글을 남겨보세요!</p>
-        </div>
+        <EmptyState>아직 등록된 글이 없어요. 첫 글을 남겨보세요!</EmptyState>
       ) : (
         <div className="item-list">
           {filtered.map((p) => (

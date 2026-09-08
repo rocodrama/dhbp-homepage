@@ -13,6 +13,7 @@ import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import { STATUSES, STATUS_TONE } from './constants'
 import './complaints.css'
+import { EmptyState } from '../../components/Feedback'
 
 export default function ComplaintsPage() {
   const { user, profile, isAdmin } = useAuth()
@@ -74,10 +75,7 @@ export default function ComplaintsPage() {
       </form>
 
       {complaints.length === 0 ? (
-        <div className="empty-state">
-          <img src="/images/mascot.png" alt="" />
-          <p>접수된 민원이 없어요.</p>
-        </div>
+        <EmptyState>접수된 민원이 없어요.</EmptyState>
       ) : (
         <div className="item-list">
           {complaints.map((c) => (
