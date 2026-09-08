@@ -1,21 +1,105 @@
 @import 'highlight.js/styles/github.css';
 
-:root {
-  --color-navy: #1b4b9c;
-  --color-orange: #f26522;
-  --color-skyblue: #8fcbeb;
-  --color-skyblue-tint: #f2f7fc;
-  --color-white: #ffffff;
-  --color-text-dark: #1f2937;
-  --color-text-gray: #6b7280;
-  --color-border: #e5e7eb;
-  --color-card-bg: #f8fafc;
+/* ─────────────────────────────────────────────────────────────────────────
+   디자인 토큰 — Figma 파일 v2의 Theme/Scale 컬렉션이 정본이다.
+   이 :root 블록은 그 export 결과이고, 손으로 고치면 드리프트다.
 
-  --color-status-ok: #2d9955;
-  --color-status-busy: #ff6621;
-  --color-status-broken: #cc3333;
+   색 규칙:  파랑 = 이동/선택 · 오렌지 = 주목 · 초록·앰버·빨강 = 상태
+   셋이 서로 다른 일을 하므로 헷갈리지 않는다. 오렌지가 메인 액센트가 아닌
+   이유는 장비 "사용중"이 앰버라서, 오렌지 버튼이 옆에 있으면 상태색을 못 읽는다.
+
+   대비는 전부 WCAG 상대휘도로 계산해 검증했다(scripts/check-contrast.mjs).
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  /* 표면 — 페이지는 흰색, 회색은 인셋에만 */
+  --surface-page: #ffffff;
+  --surface-well: #f5f6f8;
+  --surface-selected: #ebf0fa;
+  --surface-scrim: rgba(29, 36, 51, 0.45);
+
+  /* 텍스트 */
+  --text-default: #1d2433;  /* 15.53:1 on white */
+  --text-muted: #5c6675;    /*  5.81:1 on white */
+  --text-on-accent: #ffffff;
+
+  /* 선 — 구분은 이 헤어라인과 여백으로만 한다 */
+  --line-hairline: #e3e6eb;
+  --line-focus: #1f49a8;
+
+  /* 이동·선택 */
+  --navigate-accent: #1f49a8;       /* 8.15:1 on white */
+  --navigate-accent-weak: #ebf0fa;
+
+  /* 주목 — 고정글·긴급 전용. 버튼 배경으로 쓰지 않는다 */
+  --attention-marker: #c0451c;      /* 5.11:1 on white */
+  --attention-marker-weak: #faf0ed; /* 8% 틴트: 10%면 4.43:1로 AA 미달 */
+
+  /* 상태 — 배경은 흰색 위 10% 합성값(별칭으로는 알파를 못 바꾼다).
+     각 fg는 자기 bg 위에서 4.75~5.36:1 */
+  --status-ok-fg: #0b7038;
+  --status-ok-bg: #e7f1eb;
+  --status-busy-fg: #9a5b00;
+  --status-busy-bg: #f5efe6;
+  --status-broken-fg: #c42b1c;
+  --status-broken-bg: #f9eae8;
+  --status-neutral-fg: #5c6675;
+  --status-neutral-bg: #eff0f1;
+
+  /* 간격 — 4px 그리드. 이 일곱 값 밖은 check-tokens.mjs가 실패시킨다 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+
+  /* 반경 — 두 값만. 999px(배지·칩)과 50%(아바타·점)는 *모양*이고 반경 단계가 아니다 */
+  --radius-control: 8px;
+  --radius-container: 12px;
+
+  --stroke-hairline: 1px;
+  --stroke-underline: 2px;
+
+  --size-content-max: 1200px;
+  --size-prose-max: 720px;   /* 한글 15px에서 한 줄 45~50자 */
+  --size-touch-min: 44px;
+  --size-icon: 20px;
+
+  /* 높이는 테두리로 표현한다. 그림자는 이거 하나, 오버레이(모달·드롭다운) 전용 */
+  --elevation-overlay: 0 1px 2px rgba(29, 36, 51, 0.06), 0 8px 24px rgba(29, 36, 51, 0.12);
+  --focus-ring: 0 0 0 3px var(--navigate-accent-weak);
+
+  /* 브레이크포인트 — @media는 var()를 못 읽고 matchMedia는 커스텀 프로퍼티를 못 읽는다.
+     리터럴 두 개를 인정하되 check-tokens.mjs가 이 값과 일치하는지 단언한다 */
+  --bp-narrow: 768px;
+
+  /* 허용 font-size: 12 13 15 19 24 / weight: 400 600 700 */
 
   color-scheme: light;
+}
+
+/* ─── 호환 블록 — S15에서 삭제한다 ───────────────────────────────────────
+   옛 이름 12개가 14개 CSS 파일에 흩어져 있고 의미가 1:1로 안 맞는다.
+   (--color-orange는 primary 버튼이자 고정 배지였는데 accent와 attention으로 갈라진다.)
+   그 자리에서 이름을 바꾸는 대신 매핑을 두어 중간 커밋이 전부 온전하게 만든다.
+   페이지별 리스타일이 끝나면 이 블록을 지우고 남은 참조를 grep으로 잡는다.
+   ───────────────────────────────────────────────────────────────────────── */
+:root {
+  --color-navy: var(--navigate-accent);
+  --color-orange: var(--navigate-accent);
+  --color-white: var(--surface-page);
+  --color-text-dark: var(--text-default);
+  --color-text-gray: var(--text-muted);
+  --color-border: var(--line-hairline);
+  --color-card-bg: var(--surface-well);
+  --color-skyblue: var(--line-hairline);
+  /* 옛 #f2f7fc 는 파랑이라기보다 사실상 중립 웰이었다 — accent-weak 로 보내면
+     로그인 화면 전체가 파르스름해진다 */
+  --color-skyblue-tint: var(--surface-well);
+  --color-status-ok: var(--status-ok-fg);
+  --color-status-broken: var(--status-broken-fg);
+  /* --color-status-busy 는 사용처가 0인 죽은 토큰이었다 — 매핑하지 않는다 */
 }
 
 * {
@@ -24,10 +108,20 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, 'Pretendard', 'Malgun Gothic', 'Apple SD Gothic Neo',
-    sans-serif;
-  background: var(--color-card-bg);
-  color: var(--color-text-dark);
+  /* 'Pretendard'(비가변)는 스택에서 뺐다 — 애초에 로드된 적이 없다.
+     시스템 폰트는 CDN이 막혔을 때의 폴백으로 남긴다. */
+  font-family: 'Pretendard Variable', -apple-system, BlinkMacSystemFont,
+    'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+  /* 13px이 기본이었던 게 아니라, body에 명시 크기가 없어서 16px을 상속하던 걸
+     되돌리려고 페이지마다 13px을 다시 선언하고 있었다. 기준을 세우면 그게 다 지워진다. */
+  font-size: 15px;
+  line-height: 1.65;
+  /* 한글은 단어 사이 공백이 없어서 keep-all 없이는 단어 중간에서 끊긴다.
+     anywhere는 URL·모델명처럼 안 끊기는 긴 토큰이 컨테이너를 넘는 걸 막는다. */
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  background: var(--surface-well); /* S3에서 --surface-page로 — 테두리가 같이 들어가야 한다 */
+  color: var(--text-default);
 }
 
 a {
@@ -41,6 +135,22 @@ button {
 }
 
 input,
-textarea {
+textarea,
+select {
   font-family: inherit;
+}
+
+/* 앱 전체에 포커스 스타일이 하나도 없었다 */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* 날짜·시각은 자리가 흔들리면 안 된다 */
+.item-row-meta,
+.detail-meta,
+.tt-grid-time-label,
+.cal-cell,
+.equip-table td {
+  font-variant-numeric: tabular-nums;
 }
