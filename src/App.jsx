@@ -17,6 +17,7 @@ import Timetable from './pages/timetable/Timetable'
 import TaskList from './pages/tasks/TaskList'
 import Game from './pages/game/Game'
 import Complaints from './pages/complaints/ComplaintsPage'
+import MemberList from './pages/members/MemberList'
 import UserManagement from './pages/admin/UserManagement'
 
 export default function App() {
@@ -57,6 +58,7 @@ export default function App() {
         <Route path="/checklist" element={<TaskList />} />
         <Route path="/game" element={<Game />} />
         <Route path="/complaints" element={<Complaints />} />
+        <Route path="/members" element={<MemberList />} />
         <Route path="/admin/users" element={<UserManagement />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

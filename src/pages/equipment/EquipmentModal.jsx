@@ -70,21 +70,19 @@ export default function EquipmentModal({ equipment, approvedUsers, onClose }) {
     onClose()
   }
 
-  const specFields =
-    draft.type === '개인 PC'
-      ? [
-          ['cpu', 'CPU'],
-          ['ram', 'RAM 용량'],
-          ['ramSlots', '램 슬롯 (사용/전체)'],
-          ['ramType', '메모리 타입 (DDR4/DDR5)'],
-          ['gpu', 'GPU'],
-          ['storage', '저장장치'],
-          ['purchaseDate', '구매일'],
-        ]
-      : [
-          ['purchaseDate', '구매일'],
-          ['maintenanceLog', '점검 이력'],
-        ]
+  // 하드웨어 사양은 두 유형 모두 보여준다. 예전에는 공용장비가 구매일·점검 이력만
+  // 가질 수 있었는데, 114호 워크스테이션처럼 사양을 가장 알고 싶은 장비가 공용이다 —
+  // specs 에 값이 저장돼도 화면에는 안 나오는 상태였다. 점검 이력만 공용장비 전용.
+  const specFields = [
+    ['cpu', 'CPU'],
+    ['ram', 'RAM 용량'],
+    ['ramSlots', '램 슬롯 (사용/전체)'],
+    ['ramType', '메모리 타입 (DDR4/DDR5)'],
+    ['gpu', 'GPU'],
+    ['storage', '저장장치'],
+    ['purchaseDate', '구매일'],
+    ...(draft.type === '공용장비' ? [['maintenanceLog', '점검 이력']] : []),
+  ]
 
   if (editing) {
     return (

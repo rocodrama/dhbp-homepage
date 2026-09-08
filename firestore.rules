@@ -119,6 +119,20 @@ service cloud.firestore {
       allow update: if isApproved();
     }
 
+    // 인원정보 (랩실 명부) — 이름은 자유 입력이고 계정 uid 와 연결하지 않는다.
+    // 아직 가입하지 않은 인원도 명부에 있어야 하기 때문이다.
+    // 생년월일·학번·연구자번호가 들어가지만 열람 범위는 users 컬렉션(이메일 공개)과
+    // 같은 "승인된 회원 전체"다. timetableEntries·tasks 와 같은 신뢰 수준으로,
+    // 승인된 회원이면 서로의 정보를 고칠 수 있다(오타 수정이 흔하다).
+    // 삭제만 등록자 본인 또는 관리자로 제한한다.
+    match /members/{docId} {
+      allow read: if isApproved();
+      allow create: if isApproved() && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isApproved();
+      allow delete: if isApproved()
+        && (resource.data.createdBy == request.auth.uid || isApprovedAdmin());
+    }
+
     // 민원처리함 (기획서 4.8) — 조회는 승인된 회원 전체(공개 처리 현황판),
     // 제출은 누구나 본인 명의로, 상태 변경은 관리자만
     match /complaints/{docId} {

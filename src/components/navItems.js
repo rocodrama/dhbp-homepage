@@ -102,6 +102,17 @@ export const NAV_ITEMS = [
     ],
   },
   {
+    path: '/members',
+    label: '인원',
+    paths: [
+      'M4 5h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z',
+      'M16 10h2',
+      'M16 14h2',
+      'M6.17 15a3 3 0 0 1 5.66 0',
+      'M9 9a2 2 0 1 0 0 4 2 2 0 0 0 0-4z',
+    ],
+  },
+  {
     path: '/admin/users',
     label: '회원',
     adminOnly: true,
