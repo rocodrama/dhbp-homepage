@@ -35,10 +35,18 @@ service cloud.firestore {
 
     // 매뉴얼 (기획서 4.1) — 조회는 승인된 회원 전체, 작성은 누구나,
     // 수정/삭제는 작성자 본인 또는 관리자
+    // pinned(목록 위로 고정)는 posts 와 같이 관리자만 바꿀 수 있다
     match /manuals/{docId} {
       allow read: if isApproved();
-      allow create: if isApproved() && request.resource.data.authorId == request.auth.uid;
-      allow update, delete: if isApproved()
+      allow create: if isApproved() && request.resource.data.authorId == request.auth.uid
+        && (request.resource.data.pinned == false || isApprovedAdmin());
+      allow update: if isApproved()
+        && (
+          isApprovedAdmin()
+          || (resource.data.authorId == request.auth.uid
+              && request.resource.data.pinned == resource.data.pinned)
+        );
+      allow delete: if isApproved()
         && (resource.data.authorId == request.auth.uid || isApprovedAdmin());
     }
 

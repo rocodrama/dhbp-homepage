@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
@@ -42,6 +42,10 @@ export default function ManualDetail() {
     setEditing(false)
   }
 
+  const togglePin = async () => {
+    await updateDoc(doc(db, 'manuals', id), { pinned: !manual.pinned })
+  }
+
   const handleDelete = async () => {
     if (!confirm('이 매뉴얼을 삭제할까요?')) return
     await deleteDoc(doc(db, 'manuals', id))
@@ -51,6 +55,8 @@ export default function ManualDetail() {
   if (editing) {
     return (
       <form className="form-card" onSubmit={saveEdit}>
+        <h1>매뉴얼 수정</h1>
+
         <label>제목</label>
         <input
           value={draft.title}
@@ -86,24 +92,37 @@ export default function ManualDetail() {
   }
 
   return (
-    <div className="detail-card">
+    <div>
+      <Link to="/manual" className="back-link">
+        ← 매뉴얼
+      </Link>
+
       <div className="detail-header">
         <div>
-          <h2 className="detail-title">{manual.title}</h2>
+          <h1 className="detail-title">
+            {manual.pinned && <span className="pin-badge">고정</span>} {manual.title}
+          </h1>
           <div className="detail-meta">
             {manual.category} · {manual.authorName} · {formatDate(manual.createdAt)}
           </div>
         </div>
-        {canEdit && (
-          <div className="form-actions">
-            <button className="btn-secondary" onClick={startEdit}>
-              수정
+        <div className="form-actions">
+          {isAdmin && (
+            <button className="btn-secondary" onClick={togglePin}>
+              {manual.pinned ? '고정 해제' : '위로 고정'}
             </button>
-            <button className="btn-danger" onClick={handleDelete}>
-              삭제
-            </button>
-          </div>
-        )}
+          )}
+          {canEdit && (
+            <>
+              <button className="btn-secondary" onClick={startEdit}>
+                수정
+              </button>
+              <button className="btn-danger" onClick={handleDelete}>
+                삭제
+              </button>
+            </>
+          )}
+        </div>
       </div>
       <div className="detail-body" dangerouslySetInnerHTML={{ __html: html }} />
     </div>

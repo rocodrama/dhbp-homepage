@@ -172,6 +172,44 @@
   margin-top: 0;
 }
 
+/* ── 표 ─────────────────────────────────────────────────────────────────
+   장비 현황과 인원정보가 같은 레시피를 쓴다. 열이 많아 좁은 화면에서는 래퍼가
+   가로 스크롤된다 — 행으로 접는 것보다 표를 그대로 보는 쪽을 택했다. */
+.data-table-wrap {
+  overflow-x: auto;
+  border: var(--stroke-hairline) solid var(--line-hairline);
+  border-radius: var(--radius-container);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  white-space: nowrap;
+}
+
+.data-table th {
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-well);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.data-table td {
+  padding: var(--space-3) var(--space-4);
+  border-top: var(--stroke-hairline) solid var(--line-hairline);
+  font-size: 13px;
+}
+
+.data-table tbody tr {
+  cursor: pointer;
+}
+
+.data-table tbody tr:hover {
+  background: var(--surface-well);
+}
+
 /* ── 배지 ────────────────────────────────────────────────────────────────
    맨 규칙 자체가 중립 외형을 갖는다. 이게 필수다: 예전에는 알 수 없는 상태값이
    와도 hex + '22' 가 투명 배경으로 떨어져 글씨는 보였는데, data-tone 은

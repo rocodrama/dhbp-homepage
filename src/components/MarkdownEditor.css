@@ -51,13 +51,20 @@
   color: var(--color-navy);
 }
 
-.md-textarea {
+/* .md-editor 를 앞에 붙인 게 핵심이다. shared.css 의 공유 입력 규칙
+   `.form-card textarea` 가 (0,1,1) 이라 `.md-textarea` (0,1,0) 를 이겨서
+   min-height 가 탭 타겟 44px 로 덮이고 있었다 — 본문 입력란이 한 줄로 보였다.
+   테두리·패딩·모노스페이스도 같이 덮이던 걸 여기서 되돌린다. */
+.md-editor .md-textarea {
   width: 100%;
-  min-height: 400px;
+  /* 매뉴얼처럼 긴 글을 쓰는 곳이다. resize: vertical 로 더 늘릴 수 있다 */
+  min-height: 480px;
   border: none;
+  border-radius: 0;
   padding: 16px;
   font-size: 13px;
   font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+  line-height: 1.7;
   resize: vertical;
   outline: none;
 }

@@ -160,6 +160,6 @@ select {
 .detail-meta,
 .tt-grid-time-label,
 .cal-cell,
-.equip-table td {
+.data-table td {
   font-variant-numeric: tabular-nums;
 }

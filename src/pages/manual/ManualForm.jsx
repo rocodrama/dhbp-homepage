@@ -8,11 +8,12 @@ import MarkdownEditor from '../../components/MarkdownEditor'
 import './manual.css'
 
 export default function ManualForm() {
-  const { user, profile } = useAuth()
+  const { user, profile, isAdmin } = useAuth()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [category, setCategory] = useState(MANUAL_CATEGORIES[0])
   const [content, setContent] = useState('')
+  const [pinned, setPinned] = useState(false)
   const [saving, setSaving] = useState(false)
 
   const handleSubmit = async (e) => {
@@ -23,6 +24,7 @@ export default function ManualForm() {
       title: title.trim(),
       category,
       content,
+      pinned: isAdmin ? pinned : false,
       authorId: user.uid,
       authorName: profile?.displayName ?? '익명',
       createdAt: serverTimestamp(),
@@ -32,6 +34,8 @@ export default function ManualForm() {
 
   return (
     <form className="form-card" onSubmit={handleSubmit}>
+      <h1>새 매뉴얼</h1>
+
       <label>제목</label>
       <input value={title} onChange={(e) => setTitle(e.target.value)} required />
 
@@ -46,6 +50,13 @@ export default function ManualForm() {
 
       <label>내용</label>
       <MarkdownEditor value={content} onChange={setContent} />
+
+      {isAdmin && (
+        <label className="check-label">
+          <input type="checkbox" checked={pinned} onChange={(e) => setPinned(e.target.checked)} />
+          목록 위로 고정
+        </label>
+      )}
 
       <div className="form-actions">
         <button type="submit" className="btn-primary" disabled={saving}>

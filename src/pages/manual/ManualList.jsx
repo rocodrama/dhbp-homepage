@@ -22,19 +22,23 @@ export default function ManualList() {
   }, [])
 
   const filtered = useMemo(() => {
-    return manuals.filter((m) => {
+    const list = manuals.filter((m) => {
       if (category && m.category !== category) return false
       if (search && !m.title?.toLowerCase().includes(search.toLowerCase())) return false
       return true
     })
+    // 고정한 매뉴얼이 항상 위로, 그 안에서는 최신순 유지 (게시판과 같은 규칙)
+    return [...list].sort((a, b) => (a.pinned === b.pinned ? 0 : a.pinned ? -1 : 1))
   }, [manuals, search, category])
 
   return (
     <div>
+      <h1 className="page-title">매뉴얼</h1>
+
       <div className="toolbar">
         <input
           className="search-input"
-          placeholder="🔍  매뉴얼 검색"
+          placeholder="매뉴얼 검색"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -69,7 +73,10 @@ export default function ManualList() {
         <div className="item-list">
           {filtered.map((m) => (
             <Link to={`/manual/${m.id}`} key={m.id} className="item-row">
-              <span className="item-row-title">{m.title}</span>
+              <span className="item-row-title">
+                {m.pinned && <span className="pin-badge">고정</span>}
+                {m.title}
+              </span>
               <span className="item-row-meta">
                 {m.category} · {m.authorName}
               </span>

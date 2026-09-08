@@ -2,9 +2,18 @@ import { useEffect, useMemo, useState } from 'react'
 import { collection, onSnapshot } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { EmptyState, Loading } from '../../components/Feedback'
-import { POSITIONS, sortMembers } from './constants'
+import { sortMembers } from './constants'
 import MemberModal from './MemberModal'
 import './members.css'
+
+const COLUMNS = [
+  ['name', '이름'],
+  ['position', '직책'],
+  ['birthDate', '생년월일'],
+  ['studentId', '학번'],
+  ['researcherId', '연구자번호'],
+  ['email', '이메일'],
+]
 
 export default function MemberList() {
   const [members, setMembers] = useState([])
@@ -21,12 +30,7 @@ export default function MemberList() {
     return unsub
   }, [])
 
-  const groups = useMemo(() => {
-    const sorted = sortMembers(members)
-    const known = POSITIONS.map((p) => [p, sorted.filter((m) => m.position === p)])
-    const other = sorted.filter((m) => !POSITIONS.includes(m.position))
-    return [...known, ...(other.length ? [['직책 미지정', other]] : [])].filter(([, list]) => list.length)
-  }, [members])
+  const sorted = useMemo(() => sortMembers(members), [members])
 
   return (
     <div>
@@ -43,28 +47,28 @@ export default function MemberList() {
       ) : members.length === 0 ? (
         <EmptyState>등록된 인원이 없어요.</EmptyState>
       ) : (
-        groups.map(([position, list]) => (
-          <section key={position}>
-            <h2 className="section-title">
-              {position} <span className="member-count">{list.length}</span>
-            </h2>
-            <div className="item-list">
-              {list.map((m) => (
-                <div className="item-row member-row" key={m.id} onClick={() => setSelected(m)}>
-                  <div className="member-main">
-                    <span className="item-row-title">{m.name}</span>
-                    {m.email && <span className="member-email">{m.email}</span>}
-                  </div>
-                  <div className="member-meta">
-                    {m.studentId && <span>학번 {m.studentId}</span>}
-                    {m.birthDate && <span>생년월일 {m.birthDate}</span>}
-                    {m.researcherId && <span>연구자번호 {m.researcherId}</span>}
-                  </div>
-                </div>
+        <div className="data-table-wrap">
+          <table className="data-table member-table">
+            <thead>
+              <tr>
+                {COLUMNS.map(([key, label]) => (
+                  <th key={key}>{label}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sorted.map((m) => (
+                <tr key={m.id} onClick={() => setSelected(m)}>
+                  {COLUMNS.map(([key]) => (
+                    <td key={key} data-col={key}>
+                      {m[key] || '-'}
+                    </td>
+                  ))}
+                </tr>
               ))}
-            </div>
-          </section>
-        ))
+            </tbody>
+          </table>
+        </div>
       )}
 
       {selected !== undefined && (

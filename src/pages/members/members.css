@@ -1,45 +1,20 @@
-/* 표가 아니라 헤어라인 행이다. 필드가 6개라 5열 표를 만들면 390px에서 가로
-   스크롤이 되는데, 모바일이 이 앱의 1순위다. 행이면 그냥 아래로 접힌다. */
+/* 표 자체는 shared.css 의 .data-table 이다 (장비 현황과 같은 레시피).
+   여기서는 인원정보에만 필요한 것만 얹는다. */
 
-.member-row {
-  flex-wrap: wrap;
-  cursor: pointer;
+.member-table td[data-col='name'] {
+  color: var(--text-default);
+  font-weight: 600;
 }
 
-.member-main {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-}
-
-.member-email {
+/* 직책이 비어 있으면 '-' 가 들어간다 — 그 칸이 이름처럼 진하게 보이면 안 된다 */
+.member-table td[data-col='position'],
+.member-table td[data-col='email'] {
   color: var(--text-muted);
-  font-size: 13px;
 }
 
-.member-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-3);
-  color: var(--text-muted);
-  font-size: 13px;
+/* 숫자 칸은 자리가 흔들리면 안 된다 (index.css 의 .data-table td 규칙과 같은 이유) */
+.member-table td[data-col='birthDate'],
+.member-table td[data-col='studentId'],
+.member-table td[data-col='researcherId'] {
   font-variant-numeric: tabular-nums;
-}
-
-.member-count {
-  margin-left: var(--space-1);
-  padding: 0 var(--space-2);
-  border-radius: 999px;
-  background: var(--surface-well);
-  color: var(--text-muted);
-  font-size: 13px;
-  font-weight: 400;
-}
-
-@media (max-width: 768px) {
-  /* 좁은 화면에서는 메타가 이름 아래로 내려간다 */
-  .member-meta {
-    width: 100%;
-  }
 }

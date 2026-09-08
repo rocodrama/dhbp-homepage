@@ -39,8 +39,8 @@ export default function EquipmentList() {
       ) : items.length === 0 ? (
         <EmptyState>등록된 장비가 없어요.</EmptyState>
       ) : (
-        <div className="equip-table-wrap">
-          <table className="equip-table">
+        <div className="data-table-wrap">
+          <table className="data-table">
             <thead>
               <tr>
                 <th>장비명</th>
