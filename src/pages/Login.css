@@ -1,22 +1,28 @@
+/* 로그인·승인대기는 셸 밖이다. 내비도 컬럼도 없으니 폭에 무관하게 400px 중앙 카드
+   하나로 끝낸다. 그림자는 쓰지 않는다 — 여기서도 높이는 테두리로 표현한다. */
+
 .login-page {
+  /* 100vh 는 모바일에서 주소창 높이만큼 잘린다. dvh 를 다음 줄에 둬서 점진 오버라이드 */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-skyblue-tint);
-  padding: 24px;
+  padding: var(--space-6);
+  background: var(--surface-well);
 }
 
 .login-card {
-  background: var(--color-white);
-  border-radius: 16px;
-  padding: 40px;
   width: 100%;
   max-width: 400px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--space-4);
+  padding: var(--space-8);
+  border: var(--stroke-hairline) solid var(--line-hairline);
+  border-radius: var(--radius-container);
+  background: var(--surface-page);
   text-align: center;
 }
 
@@ -28,34 +34,26 @@
 
 .login-card h1 {
   margin: 0;
-  font-size: 22px;
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .login-sub {
   margin: 0;
-  color: var(--color-text-gray);
+  color: var(--text-muted);
   font-size: 13px;
 }
 
+/* 버튼 자체는 .btn-secondary 다 — 여기서는 폭만 정한다 */
 .google-btn {
   width: 100%;
-  padding: 12px 20px;
-  border: 1px solid var(--color-border);
-  background: var(--color-white);
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.google-btn:hover {
-  background: var(--color-card-bg);
 }
 
 .login-note {
   width: 100%;
-  background: var(--color-skyblue-tint);
-  border-radius: 8px;
-  padding: 10px 14px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--surface-well);
+  color: var(--text-muted);
   font-size: 12px;
-  color: var(--color-text-gray);
 }

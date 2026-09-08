@@ -83,7 +83,7 @@ for (const f of cssFiles) {
   }
 }
 
-const BASELINE = 32 // 착수 시점 실측값. 페이지별 리스타일마다 내린다
+const BASELINE = 23 // 착수 시점 실측값. 페이지별 리스타일마다 내린다
 if (offenders.length > BASELINE) {
   console.error(offenders.map((o) => '  ' + o).join('\n'))
   assert.fail(`스케일 밖 px 값이 ${offenders.length}개 — BASELINE ${BASELINE} 보다 늘었다`)

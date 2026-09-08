@@ -14,7 +14,7 @@ export default function Pending() {
           <br />
           랩실 관리자가 승인하면 바로 이용하실 수 있어요.
         </p>
-        <button className="google-btn" onClick={() => signOutUser()}>
+        <button className="btn-secondary google-btn" onClick={() => signOutUser()}>
           로그아웃
         </button>
       </div>

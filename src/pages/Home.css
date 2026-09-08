@@ -1,33 +1,39 @@
+/* 홈은 이 앱에서 카드가 허용되는 유일한 곳이다 — 항목이 이질적이라(매뉴얼·게시판·
+   점심지도) 헤어라인 목록으로는 같은 종류처럼 보인다. 나머지 목록은 전부 행이다. */
+
 .welcome {
-  margin: 0 0 16px;
-  font-size: 22px;
+  margin: 0 0 var(--space-6);
+  font-size: 24px;
+  font-weight: 700;
 }
 
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  gap: var(--space-4);
 }
 
+/* 높이는 그림자가 아니라 테두리로 표현한다. 그림자 토큰은 하나뿐이고 오버레이 전용이다.
+   hover 는 .item-row 와 같은 well 틴트 — 앱 전체에서 "클릭 가능"의 언어를 하나로 둔다. */
 .card {
   display: block;
-  background: var(--color-white);
-  border-radius: 12px;
-  padding: 20px;
-  transition: box-shadow 0.15s;
+  padding: var(--space-4);
+  border: var(--stroke-hairline) solid var(--line-hairline);
+  border-radius: var(--radius-container);
 }
 
 .card:hover {
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  background: var(--surface-well);
 }
 
 .card h3 {
-  margin: 0 0 8px;
+  margin: 0 0 var(--space-1);
   font-size: 15px;
+  font-weight: 600;
 }
 
 .card p {
   margin: 0;
+  color: var(--text-muted);
   font-size: 13px;
-  color: var(--color-text-gray);
 }

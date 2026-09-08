@@ -13,9 +13,9 @@ export default function Home() {
 
   return (
     <div>
-      <h2 className="welcome">
+      <h1 className="welcome">
         환영합니다, {profile?.displayName ?? '회원'}님! 오늘도 화이팅 :)
-      </h2>
+      </h1>
       <div className="summary-cards">
         {CARDS.map((c) => (
           <Link key={c.path} to={c.path} className="card">
