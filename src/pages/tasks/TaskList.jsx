@@ -23,7 +23,6 @@ export default function TaskList() {
   return (
     <div>
       <div className="toolbar">
-        <div style={{ flex: 1 }} />
         <button className="new-btn" onClick={() => setSelectedId('new')}>
           + 미션 만들기
         </button>

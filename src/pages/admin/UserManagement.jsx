@@ -36,13 +36,13 @@ export default function UserManagement() {
 
   return (
     <div>
-      <h3 className="admin-section-title">가입 승인 대기 ({pending.length})</h3>
+      <h3 className="section-title">가입 승인 대기 ({pending.length})</h3>
       {pending.length === 0 ? (
         <p style={{ color: 'var(--color-text-gray)', fontSize: 13 }}>대기 중인 신청이 없어요.</p>
       ) : (
         <div className="item-list">
           {pending.map((u) => (
-            <div className="user-row" key={u.id}>
+            <div className="item-row" key={u.id}>
               <div className="user-row-info">
                 <img className="user-row-avatar" src={u.photoURL} alt="" />
                 <div>
@@ -63,10 +63,10 @@ export default function UserManagement() {
         </div>
       )}
 
-      <h3 className="admin-section-title">전체 회원 ({approved.length})</h3>
+      <h3 className="section-title">전체 회원 ({approved.length})</h3>
       <div className="item-list">
         {approved.map((u) => (
-          <div className="user-row" key={u.id}>
+          <div className="item-row" key={u.id}>
             <div className="user-row-info">
               <img className="user-row-avatar" src={u.photoURL} alt="" />
               <div>

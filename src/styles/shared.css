@@ -1,232 +1,294 @@
-/* Shared list/detail/form patterns reused across features (매뉴얼, 게시판, ...) */
+/* 목록·상세·폼의 공유 패턴.
+   페이지 배경이 흰색이 되었으므로 "흰 카드" 레시피는 대부분 사라졌다 —
+   흰 바탕 위의 흰 상자는 아무 일도 하지 않는다. 구분은 헤어라인과 여백으로만 한다. */
 
-.toolbar {
+/* ── 툴바 / 컨트롤 행 ─────────────────────────────────────────────────────
+   네 클래스의 선언이 완전히 같았다. 다른 건 정렬뿐이다:
+   .toolbar 는 검색+새 항목이라 우측, *-controls 는 필터라 좌측. */
+.toolbar,
+.tt-controls,
+.cal-controls,
+.game-controls {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--space-3);
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
+}
+
+/* 이 한 줄이 flex:1 스페이서 div 3개를 삭제한다 */
+.toolbar {
+  justify-content: flex-end;
+}
+
+/* ── 입력 ────────────────────────────────────────────────────────────────
+   같은 레시피가 9곳에 흩어져 있었다. .input 유틸리티 클래스는 만들지 않는다 —
+   같은 중복을 없애자고 JSX 9곳을 고쳐야 한다. 셀렉터 목록이면 CSS만 고치면 된다. */
+.search-input,
+.form-card input,
+.form-card select,
+.form-card textarea,
+.modal-form input,
+.modal-form select,
+.modal-form textarea,
+.complaint-form textarea,
+.name-input-row input,
+.tt-controls select,
+.cal-controls select,
+.status-select {
+  padding: var(--space-2) var(--space-3);
+  /* 폰트만으로는 37px이라 모바일 탭 타겟에 못 미친다 */
+  min-height: var(--size-touch-min);
+  border: var(--stroke-hairline) solid var(--line-hairline);
+  border-radius: var(--radius-control);
+  background: var(--surface-page);
+  color: var(--text-default);
+  font-size: 13px;
+}
+
+.form-card input,
+.form-card select,
+.form-card textarea,
+.modal-form input,
+.modal-form select,
+.modal-form textarea,
+.complaint-form textarea {
+  width: 100%;
 }
 
 .search-input {
   flex: 1;
   min-width: 200px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  background: var(--color-white);
-  font-size: 13px;
 }
 
-.new-btn {
-  background: var(--color-orange);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 13px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.item-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.item-row {
-  background: var(--color-white);
-  border-radius: 10px;
-  padding: 14px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.item-row-title {
-  font-size: 14px;
-  color: var(--color-text-dark);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.item-row-meta {
-  font-size: 11px;
-  color: var(--color-text-gray);
-  white-space: nowrap;
-}
-
-.pin-badge {
-  background: var(--color-orange);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 60px 20px;
-  color: var(--color-text-gray);
-}
-
-.empty-state img {
-  width: 80px;
-  margin-bottom: 12px;
-}
-
-.form-card,
-.detail-card {
-  background: var(--color-white);
-  border-radius: 12px;
-  padding: 24px;
-  max-width: 100%;
-}
-
-.form-card label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  margin: 16px 0 6px;
-}
-
-.form-card label:first-child {
-  margin-top: 0;
-}
-
-.form-card input,
-.form-card select,
-.form-card textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  font-size: 13px;
-}
-
-/* used inside Modal, where the card chrome (bg/padding/radius) is already provided */
+.form-card label,
 .modal-form label {
   display: block;
+  margin: var(--space-4) 0 var(--space-1);
   font-size: 13px;
   font-weight: 600;
-  margin: 14px 0 6px;
 }
 
+.form-card label:first-child,
 .modal-form label:first-child {
   margin-top: 0;
 }
 
-.modal-form input,
-.modal-form select,
-.modal-form textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  font-size: 13px;
-}
-
 .form-actions {
   display: flex;
-  gap: 8px;
-  margin-top: 20px;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
 }
 
-.btn-primary {
-  background: var(--color-orange);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 18px;
+/* ── 버튼 ────────────────────────────────────────────────────────────────
+   .new-btn 은 .btn-primary 와 같은 버튼이었다 — 이름만 둘이었다. */
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.new-btn {
+  padding: var(--space-2) var(--space-4);
+  min-height: var(--size-touch-min);
+  border: var(--stroke-hairline) solid transparent;
+  border-radius: var(--radius-control);
   font-size: 13px;
   font-weight: 600;
+  white-space: nowrap;
+}
+
+.btn-primary,
+.new-btn {
+  background: var(--navigate-accent);
+  color: var(--text-on-accent);
 }
 
 .btn-secondary {
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 13px;
+  background: var(--surface-page);
+  border-color: var(--line-hairline);
+  color: var(--text-default);
+}
+
+.btn-secondary:hover {
+  background: var(--surface-well);
 }
 
 .btn-danger {
-  background: #fff;
-  border: 1px solid var(--color-status-broken);
-  color: var(--color-status-broken);
-  border-radius: 8px;
-  padding: 10px 18px;
-  font-size: 13px;
+  background: var(--surface-page);
+  border-color: var(--status-broken-fg);
+  color: var(--status-broken-fg);
 }
 
+.btn-danger:hover {
+  background: var(--status-broken-bg);
+}
+
+/* ── 목록 = 헤어라인 행 ──────────────────────────────────────────────────
+   흰 카드를 잃었으니 행 좌우 패딩만큼 목록을 밖으로 내서 제목이 컬럼 좌측 선에
+   맞게 한다. hover 틴트는 글자보다 8px 넓게 번진다. */
+.item-list {
+  border-top: var(--stroke-hairline) solid var(--line-hairline);
+  margin-inline: calc(var(--space-2) * -1);
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-2);
+  border-bottom: var(--stroke-hairline) solid var(--line-hairline);
+}
+
+/* 카드를 잃은 자리를 메우는 클릭 단서. 게임 결과표는 이동하지 않는 행이라
+   hover 가 거짓말이 된다 — 거기만 뺀다. */
+.item-list:not(.result-table) .item-row:hover {
+  background: var(--surface-well);
+}
+
+.item-row-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-default);
+}
+
+.item-row-meta {
+  color: var(--text-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.section-title {
+  margin: var(--space-6) 0 var(--space-3);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.section-title:first-child {
+  margin-top: 0;
+}
+
+/* ── 배지 ────────────────────────────────────────────────────────────────
+   맨 규칙 자체가 중립 외형을 갖는다. 이게 필수다: 예전에는 알 수 없는 상태값이
+   와도 hex + '22' 가 투명 배경으로 떨어져 글씨는 보였는데, data-tone 은
+   매칭되는 규칙이 없으면 아무 스타일도 안 붙기 때문이다. */
+.status-badge {
+  display: inline-block;
+  padding: 2px var(--space-2);
+  border-radius: 999px;
+  background: var(--status-neutral-bg);
+  color: var(--status-neutral-fg);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge[data-tone='ok'] {
+  background: var(--status-ok-bg);
+  color: var(--status-ok-fg);
+}
+
+.status-badge[data-tone='busy'] {
+  background: var(--status-busy-bg);
+  color: var(--status-busy-fg);
+}
+
+.status-badge[data-tone='broken'] {
+  background: var(--status-broken-bg);
+  color: var(--status-broken-fg);
+}
+
+/* 고정글 마커. attention 은 이런 표식 전용이고 버튼 배경이 아니다 */
+.pin-badge {
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-control);
+  background: var(--attention-marker-weak);
+  color: var(--attention-marker);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* ErrorBoundary 가 라우터 *밖*에 마운트되어 있다. .empty-state 와 .btn-primary 는
+   반드시 전역 로드(main.jsx)에 남아야 한다 — 피처 CSS 로 옮기면 에러 화면이
+   무스타일 텍스트가 된다. */
+.empty-state {
+  padding: var(--space-12) var(--space-4);
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.empty-state img {
+  width: 80px;
+  margin-bottom: var(--space-3);
+}
+
+/* ── 상세 ────────────────────────────────────────────────────────────────
+   .detail-card 의 흰 배경·반경·패딩은 지웠다. 상세는 카드가 아니라 컬럼 안의
+   문서다. */
 .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 8px;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
 }
 
 .detail-title {
-  font-size: 20px;
-  margin: 0 0 6px;
+  margin: 0 0 var(--space-1);
+  font-size: 24px;
 }
 
 .detail-meta {
-  font-size: 12px;
-  color: var(--color-text-gray);
-  margin-bottom: 20px;
+  margin-bottom: var(--space-6);
+  color: var(--text-muted);
+  font-size: 13px;
 }
 
 .detail-body {
-  line-height: 1.7;
-  font-size: 14px;
+  /* 한글 15px 에서 한 줄 45~50자. 1152px 전폭 프로즈는 읽을 수 없다.
+     ch 단위는 쓰지 않는다 — ch 는 "0"의 폭이라 한글은 그 2배다. */
+  max-width: var(--size-prose-max);
 }
 
 .detail-body img {
   max-width: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-control);
 }
 
 .detail-body pre {
-  background: var(--color-card-bg);
-  padding: 12px;
-  border-radius: 8px;
+  padding: var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--surface-well);
   overflow-x: auto;
 }
 
 .detail-body code {
-  background: var(--color-card-bg);
-  padding: 2px 5px;
-  border-radius: 4px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-control);
+  background: var(--surface-well);
 }
 
 .detail-body blockquote {
-  border-left: 3px solid var(--color-skyblue);
   margin: 0;
-  padding-left: 14px;
-  color: var(--color-text-gray);
+  padding-left: var(--space-3);
+  border-left: var(--stroke-underline) solid var(--line-hairline);
+  color: var(--text-muted);
 }
 
-/* Slot machine */
+/* ── 슬롯머신 / 이름 칩 ─────────────────────────────────────────────────── */
 .slot-reels {
   display: flex;
-  gap: 10px;
-  margin-bottom: 16px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 
 .slot-reel {
   flex: 1;
-  background: var(--color-white);
-  border-radius: 10px;
-  padding: 24px 8px;
-  text-align: center;
+  padding: var(--space-6) var(--space-2);
+  border: var(--stroke-underline) solid var(--line-hairline);
+  border-radius: var(--radius-container);
+  background: var(--surface-page);
   font-weight: 700;
-  font-size: 14px;
-  border: 2px solid var(--color-border);
+  text-align: center;
   min-height: 24px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -235,12 +297,11 @@
 
 .slot-reel.spinning {
   filter: blur(1.5px);
-  border-color: var(--color-skyblue);
 }
 
 .slot-reel.stopped {
   animation: slot-stop 0.4s ease-out;
-  border-color: var(--color-orange);
+  border-color: var(--navigate-accent);
 }
 
 @keyframes slot-stop {
@@ -255,49 +316,45 @@
   }
 }
 
+/* 결과 발표는 이 앱에서 "주목"이 정당한 몇 안 되는 자리다 */
 .result-banner {
-  font-size: 20px;
+  margin: var(--space-4) 0;
+  color: var(--attention-marker);
+  font-size: 24px;
   font-weight: 700;
-  color: var(--color-orange);
   text-align: center;
-  margin: 16px 0;
 }
 
 .name-input-row {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
 }
 
 .name-input-row input {
   flex: 1;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  font-size: 13px;
 }
 
 .name-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 20px;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
 }
 
 .name-chip {
-  background: var(--color-white);
-  border-radius: 999px;
-  padding: 6px 8px 6px 14px;
-  font-size: 13px;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-3);
+  border: var(--stroke-hairline) solid var(--line-hairline);
+  border-radius: 999px;
+  font-size: 13px;
 }
 
 .name-chip button {
   border: none;
   background: none;
-  color: var(--color-text-gray);
-  font-size: 14px;
+  color: var(--text-muted);
   line-height: 1;
 }

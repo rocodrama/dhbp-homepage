@@ -4,7 +4,6 @@ import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import MarkdownEditor from '../../components/MarkdownEditor'
-import './board.css'
 
 export default function BoardForm() {
   const { user, profile, isAdmin } = useAuth()

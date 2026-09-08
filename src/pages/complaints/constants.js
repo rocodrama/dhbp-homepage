@@ -1,7 +1,8 @@
 export const STATUSES = ['접수', '처리중', '완료']
 
-export const STATUS_COLOR = {
-  접수: '#6b7280',
-  처리중: '#ff6621',
-  완료: '#2d9955',
+// 접수는 아직 아무 일도 일어나지 않은 상태다 — 중립이 맞다.
+export const STATUS_TONE = {
+  접수: 'neutral',
+  처리중: 'busy',
+  완료: 'ok',
 }

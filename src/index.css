@@ -129,7 +129,7 @@ body {
      anywhere는 URL·모델명처럼 안 끊기는 긴 토큰이 컨테이너를 넘는 걸 막는다. */
   word-break: keep-all;
   overflow-wrap: anywhere;
-  background: var(--surface-well); /* S3에서 --surface-page로 — 테두리가 같이 들어가야 한다 */
+  background: var(--surface-page);
   color: var(--text-default);
 }
 

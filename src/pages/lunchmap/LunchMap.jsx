@@ -51,7 +51,6 @@ export default function LunchMap() {
   return (
     <div>
       <div className="toolbar">
-        <div style={{ flex: 1 }} />
         <button
           className="btn-secondary"
           onClick={() => setPickerOpen(true)}

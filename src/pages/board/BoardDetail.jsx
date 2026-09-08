@@ -5,7 +5,6 @@ import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import { useMarkdownHtml } from '../manual/useMarkdown'
 import MarkdownEditor from '../../components/MarkdownEditor'
-import './board.css'
 
 function formatDate(ts) {
   if (!ts?.toDate) return ''

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { addDoc, collection, deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
-import { EQUIPMENT_TYPES, EQUIPMENT_STATUSES, STATUS_COLOR } from './constants'
+import { EQUIPMENT_TYPES, EQUIPMENT_STATUSES, STATUS_TONE } from './constants'
 import Modal from '../../components/Modal'
 import './equipment.css'
 
@@ -155,13 +155,7 @@ export default function EquipmentModal({ equipment, approvedUsers, onClose }) {
           <h2 className="detail-title">{equipment.name}</h2>
           <div className="detail-meta">{equipment.type}</div>
         </div>
-        <span
-          className="status-badge"
-          style={{
-            background: STATUS_COLOR[equipment.status] + '22',
-            color: STATUS_COLOR[equipment.status],
-          }}
-        >
+        <span className="status-badge" data-tone={STATUS_TONE[equipment.status]}>
           {equipment.status}
         </span>
       </div>

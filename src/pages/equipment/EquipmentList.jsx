@@ -3,7 +3,7 @@ import { collection, onSnapshot, orderBy, query } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
 import { useApprovedUsers } from './useApprovedUsers'
-import { STATUS_COLOR } from './constants'
+import { STATUS_TONE } from './constants'
 import EquipmentModal from './EquipmentModal'
 import './equipment.css'
 
@@ -26,7 +26,6 @@ export default function EquipmentList() {
   return (
     <div>
       <div className="toolbar">
-        <div style={{ flex: 1 }} />
         {isAdmin && (
           <button className="new-btn" onClick={() => setSelected(null)}>
             + 장비 추가
@@ -58,13 +57,7 @@ export default function EquipmentList() {
                   <td>{it.name}</td>
                   <td>{it.ownerName}</td>
                   <td>
-                    <span
-                      className="status-badge"
-                      style={{
-                        background: STATUS_COLOR[it.status] + '22',
-                        color: STATUS_COLOR[it.status],
-                      }}
-                    >
+                    <span className="status-badge" data-tone={STATUS_TONE[it.status]}>
                       {it.status}
                     </span>
                   </td>

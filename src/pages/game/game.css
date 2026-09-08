@@ -1,4 +1,3 @@
-@import '../../styles/shared.css';
 
 .game-picker {
   display: grid;
@@ -386,14 +385,6 @@
 }
 
 /* 등수 게임 공통 (경주·주사위·생존게임) */
-.game-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 16px;
-}
-
 .rank-picker {
   display: flex;
   align-items: center;

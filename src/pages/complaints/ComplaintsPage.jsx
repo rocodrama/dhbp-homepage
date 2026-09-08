@@ -11,7 +11,7 @@ import {
 } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
-import { STATUSES, STATUS_COLOR } from './constants'
+import { STATUSES, STATUS_TONE } from './constants'
 import './complaints.css'
 
 export default function ComplaintsPage() {
@@ -81,7 +81,7 @@ export default function ComplaintsPage() {
       ) : (
         <div className="item-list">
           {complaints.map((c) => (
-            <div className="complaint-row" key={c.id}>
+            <div className="item-row" key={c.id}>
               <div>
                 <div className="complaint-content">{c.content}</div>
                 <div className="complaint-meta">
@@ -101,13 +101,7 @@ export default function ComplaintsPage() {
                   ))}
                 </select>
               ) : (
-                <span
-                  className="status-badge"
-                  style={{
-                    background: STATUS_COLOR[c.status] + '22',
-                    color: STATUS_COLOR[c.status],
-                  }}
-                >
+                <span className="status-badge" data-tone={STATUS_TONE[c.status]}>
                   {c.status}
                 </span>
               )}
