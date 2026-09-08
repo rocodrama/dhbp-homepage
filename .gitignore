@@ -13,6 +13,12 @@ dist-ssr
 *.local
 .firebase
 
+# 환경 변수. 지금 쓰는 .env.local 은 위 *.local 에 우연히 걸려서 무시되고 있었다 —
+# .env / .env.production 을 새로 만들면 그냥 커밋된다. 이름을 명시해 둔다.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
