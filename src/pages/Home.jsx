@@ -17,6 +17,7 @@ const LINKS = [
   { href: 'https://knu-icf.kangwon.ac.kr/main_0001_08.act', label: '연구통합관리시스템' },
   { href: 'https://knu-icf.kangwon.ac.kr/issue_main2.act', label: '연구원사이트' },
   { href: 'https://file-agent-frontend.vercel.app/', label: '태영이의 파일 찾기' },
+  { href: 'https://jeon22dhbp.tw5.quickconnect.to/#/signin', label: '나스' },
 ]
 
 export default function Home() {
