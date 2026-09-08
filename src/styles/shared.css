@@ -56,9 +56,14 @@
   width: 100%;
 }
 
+/* 1152px 컬럼에서 flex:1 만 주면 검색창이 1000px가 된다 — 아무도 그렇게 긴 질의를
+   쓰지 않는다. margin-right:auto 가 .toolbar 의 flex-end 를 흡수해서, 검색은 왼쪽에
+   남고 버튼만 오른쪽으로 간다. */
 .search-input {
   flex: 1;
   min-width: 200px;
+  max-width: 360px;
+  margin-right: auto;
 }
 
 .form-card label,
@@ -229,12 +234,69 @@
 /* ── 상세 ────────────────────────────────────────────────────────────────
    .detail-card 의 흰 배경·반경·패딩은 지웠다. 상세는 카드가 아니라 컬럼 안의
    문서다. */
+/* 상세로 딥링크를 받아 새 탭에서 열고 새로고침하는 게 인트라넷의 정상 사용이다.
+   그러면 navigate(-1) 은 앱 밖으로 걸어나간다 — 정적 부모로 가는 Link 여야 한다. */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: var(--size-touch-min);
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.back-link:hover {
+  color: var(--navigate-accent);
+}
+
+/* 목록 페이지의 제목.
+   계획에서는 "내비 밑줄이 제목을 대신한다"고 적었는데, 그건 내비 레이블이 전체
+   이름일 때의 논거였다. S2에서 레이블을 축약한 뒤로는 "공지사항/게시판",
+   "점심메뉴 지도", "학기 시간표", "민원처리함" 같은 전체 이름이 앱 어디에도
+   나타나지 않는다 — 내비가 못 담는 정보를 이 제목이 담는다.
+   덤으로 목록 페이지가 heading 하나 없는 문서가 되는 것도 막는다. */
+.page-title {
+  margin: 0 0 var(--space-4);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* 폼 2개는 지금까지 아무 제목도 없었다. 셸이 제목을 그려주고 있어서 가려졌던
+   결함이고, 셸 제목을 없앤 지금은 드러난다. 새 클래스 대신 .form-card 의
+   자손 셀렉터 패턴을 그대로 쓴다. */
+.form-card h1 {
+  margin: 0 0 var(--space-6);
+  font-size: 24px;
+  font-weight: 700;
+}
+
+/* 체크박스 라벨은 block 도 아니고 width:100% 도 아니다.
+   .form-card label 이 (0,1,1) 이라 .check-label (0,1,0) 로는 못 이긴다 — 실측으로
+   display 가 block 으로 나왔다. 형제 규칙과 같은 방식으로 스코프를 맞춘다. */
+.form-card .check-label,
+.modal-form .check-label,
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.form-card .check-label input,
+.modal-form .check-label input {
+  width: auto;
+  min-height: 0;
+}
+
 .detail-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: var(--space-3);
   margin-bottom: var(--space-2);
+}
+
+.detail-header .form-actions {
+  margin-top: 0;
 }
 
 .detail-title {

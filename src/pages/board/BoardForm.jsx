@@ -30,6 +30,8 @@ export default function BoardForm() {
 
   return (
     <form className="form-card" onSubmit={handleSubmit}>
+      <h1>새 글</h1>
+
       <label>제목</label>
       <input value={title} onChange={(e) => setTitle(e.target.value)} required />
 
@@ -37,13 +39,8 @@ export default function BoardForm() {
       <MarkdownEditor value={content} onChange={setContent} />
 
       {isAdmin && (
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <input
-            type="checkbox"
-            checked={pinned}
-            onChange={(e) => setPinned(e.target.checked)}
-            style={{ width: 'auto' }}
-          />
+        <label className="check-label">
+          <input type="checkbox" checked={pinned} onChange={(e) => setPinned(e.target.checked)} />
           공지로 상단 고정
         </label>
       )}

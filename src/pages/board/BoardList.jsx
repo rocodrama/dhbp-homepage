@@ -28,10 +28,12 @@ export default function BoardList() {
 
   return (
     <div>
+      <h1 className="page-title">공지사항/게시판</h1>
+
       <div className="toolbar">
         <input
           className="search-input"
-          placeholder="🔍  게시글 검색"
+          placeholder="게시글 검색"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />

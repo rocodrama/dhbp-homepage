@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { deleteDoc, doc, onSnapshot, updateDoc } from 'firebase/firestore'
 import { db } from '../../firebase'
 import { useAuth } from '../../context/AuthContext'
@@ -53,6 +53,8 @@ export default function BoardDetail() {
   if (editing) {
     return (
       <form className="form-card" onSubmit={saveEdit}>
+        <h1>글 수정</h1>
+
         <label>제목</label>
         <input
           value={draft.title}
@@ -77,12 +79,16 @@ export default function BoardDetail() {
   }
 
   return (
-    <div className="detail-card">
+    <div>
+      <Link to="/board" className="back-link">
+        ← 공지사항/게시판
+      </Link>
+
       <div className="detail-header">
         <div>
-          <h2 className="detail-title">
+          <h1 className="detail-title">
             {post.pinned && <span className="pin-badge">공지</span>} {post.title}
-          </h2>
+          </h1>
           <div className="detail-meta">
             {post.authorName} · {formatDate(post.createdAt)}
           </div>
