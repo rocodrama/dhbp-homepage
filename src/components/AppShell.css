@@ -1,201 +1,198 @@
-.shell {
-  display: flex;
-  min-height: 100vh;
-}
+/* 상단바 2단: 브랜드·프로필 / 가로 스크롤 내비.
+   좌측 사이드바와 모바일 하단 탭바는 사라졌다 — 데스크톱과 모바일이 같은 내비를 쓴다. */
 
-.sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: var(--color-navy);
-  padding: 24px 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.sidebar-logo {
-  color: #fff;
-  font-weight: 700;
-  font-size: 18px;
-  padding: 0 12px 20px;
-}
-
-.sidebar-nav {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.nav-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 14px;
-}
-
-.nav-item:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.nav-item.active {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--color-orange);
-  font-weight: 600;
-}
-
-.nav-icon {
-  font-size: 16px;
-}
-
-.main-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
+.bar-inner {
+  /* 컬럼은 뷰포트 중앙, 내용은 컬럼 안에서 좌측. 브랜드·내비·본문 셋 다 이 클래스를
+     쓰기 때문에 같은 좌측 선에 맞는다. */
+  max-width: var(--size-content-max);
+  margin-inline: auto;
+  padding-inline: var(--size-gutter);
 }
 
 .topbar {
-  height: 64px;
-  flex-shrink: 0;
-  background: var(--color-white);
-  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface-page);
+  border-bottom: var(--stroke-hairline) solid var(--line-hairline);
+}
+
+.topbar-row {
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 32px;
+  gap: var(--space-4);
 }
 
-.page-title {
-  font-size: 20px;
-  font-weight: 600;
-  margin: 0;
-}
-
-.avatar-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: none;
-  background: var(--color-navy);
-  color: #fff;
-  overflow: hidden;
+.brand {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--space-2);
+  min-height: var(--size-touch-min);
 }
 
-.avatar-img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+.brand-mark {
+  width: 28px;
+  height: 28px;
 }
+
+/* ── 내비 ─────────────────────────────────────────────────────────────── */
+
+.topnav-scroller {
+  display: flex;
+  gap: var(--space-2);
+  overflow-x: auto;
+  /* 브라우저 뒤로가기 스와이프가 내비 스크롤에 걸려 발동하는 걸 막는다 */
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* 넘치는 쪽을 알려주는 유일한 어포던스. 페이드 폭을 좌우 패딩과 같게 잡았기 때문에
+     스크롤이 끝에 있을 때는 패딩만 흐려지고 글자는 하나도 잃지 않는다.
+     (배경 그라디언트로는 못 한다 — 배경은 글자 뒤에 깔린다.) */
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 var(--size-gutter),
+    #000 calc(100% - var(--size-gutter)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 var(--size-gutter),
+    #000 calc(100% - var(--size-gutter)),
+    transparent 100%
+  );
+}
+
+.topnav-scroller::-webkit-scrollbar {
+  display: none;
+}
+
+.topnav-scroller a {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-inline: var(--space-2);
+  height: var(--size-touch-min);
+  font-size: 13px;
+  white-space: nowrap;
+  color: var(--text-muted);
+  /* 모든 항목에 투명 밑줄을 깔아 활성 전환 때 레이아웃이 흔들리지 않게 한다 */
+  border-bottom: var(--stroke-underline) solid transparent;
+}
+
+.topnav-scroller a:hover {
+  color: var(--text-default);
+}
+
+.topnav-scroller a[aria-current='page'] {
+  color: var(--text-default);
+  font-weight: 600;
+  border-bottom-color: var(--navigate-accent);
+}
+
+.nav-icon {
+  width: var(--size-icon);
+  height: var(--size-icon);
+  flex: none;
+}
+
+/* ── 프로필 ───────────────────────────────────────────────────────────── */
 
 .profile-menu {
   position: relative;
 }
 
+.avatar-btn {
+  width: var(--size-touch-min);
+  height: var(--size-touch-min);
+  padding: 0;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-img,
+.avatar-fallback {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.avatar-img {
+  object-fit: cover;
+}
+
+/* 지금까지 이 클래스에는 규칙이 아예 없어서 photoURL 없는 계정은 맨 글자 하나로 보였다 */
+.avatar-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--navigate-accent);
+  color: var(--text-on-accent);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+}
+
 .profile-dropdown {
   position: absolute;
-  top: 44px;
+  top: var(--space-12);
   right: 0;
   width: 220px;
-  background: var(--color-white);
-  border: 1px solid var(--color-border);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  background: var(--surface-page);
+  border: var(--stroke-hairline) solid var(--line-hairline);
+  border-radius: var(--radius-container);
+  box-shadow: var(--elevation-overlay);
   overflow: hidden;
   z-index: 20;
 }
 
 .profile-dropdown-info {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--stroke-hairline) solid var(--line-hairline);
 }
 
 .profile-dropdown-name {
-  font-size: 14px;
   font-weight: 600;
 }
 
 .profile-dropdown-email {
   font-size: 12px;
-  color: var(--color-text-gray);
-  margin-top: 2px;
+  color: var(--text-muted);
   word-break: break-all;
 }
 
 .profile-dropdown-logout {
   width: 100%;
-  padding: 12px 16px;
+  padding: var(--space-3) var(--space-4);
   text-align: left;
-  font-size: 14px;
-  color: #d33;
+  color: var(--status-broken-fg);
   background: none;
   border: none;
 }
 
 .profile-dropdown-logout:hover {
-  background: rgba(211, 51, 51, 0.08);
+  background: var(--status-broken-bg);
 }
 
-.content-area {
-  flex: 1;
-  padding: 32px;
-  overflow-y: auto;
+/* ── 본문 ─────────────────────────────────────────────────────────────── */
+
+.content {
+  /* overflow-y 를 두지 않는다. 고정 사이드바 때문에 있던 건데, 없애면 문서가 네이티브로
+     스크롤되어 모바일 주소창 숨김·스크롤 복원·당겨서 새로고침이 한 번에 살아난다. */
+  padding-block: var(--space-8);
 }
 
-.mobile-tabbar {
-  display: none;
-}
-
-/* ---- Mobile layout ---- */
 @media (max-width: 768px) {
-  .sidebar {
-    display: none;
-  }
-
-  .topbar {
-    height: 56px;
-    padding: 0 16px;
-    background: var(--color-navy);
-  }
-
-  .page-title {
-    color: #fff;
-    font-size: 16px;
-  }
-
-  .content-area {
-    padding: 16px;
-    padding-bottom: 72px;
-  }
-
-  .mobile-tabbar {
-    display: flex;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 56px;
-    background: var(--color-white);
-    border-top: 1px solid var(--color-border);
-    justify-content: space-around;
-    align-items: center;
-  }
-
-  .tab-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-    font-size: 10px;
-    color: var(--color-text-gray);
-  }
-
-  .tab-item.active {
-    color: var(--color-orange);
+  .content {
+    padding-block: var(--space-4);
   }
 }

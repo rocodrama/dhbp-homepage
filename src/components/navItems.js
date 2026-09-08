@@ -1,15 +1,115 @@
+// 아이콘은 Lucide v1.42.0 (ISC) 의 path 데이터를 그대로 옮긴 것이다.
+// lucide-react 를 넣지 않은 이유: 실제로 쓰는 아이콘이 11개뿐이라 패키지가 벌어주는 게
+// 없다. 24x24 viewBox / stroke-width 2 는 Lucide 원본 규격이므로 바꾸면 어긋난다.
+// 아이콘이 더 필요해지면 여기에 path 를 추가한다 (기억으로 쓰지 말고 lucide-static 에서 읽을 것).
+//
+// label 은 상단 내비 한 줄에 들어가야 해서 축약형이다. 원래 이름("공지사항/게시판",
+// "점심메뉴 지도" 등)은 각 페이지가 자기 <h1> 에서 소유한다.
 export const NAV_ITEMS = [
-  { path: '/', label: '홈', icon: '🏠' },
-  { path: '/manual', label: '매뉴얼', icon: '📖' },
-  { path: '/board', label: '공지사항/게시판', icon: '📋' },
-  { path: '/equipment', label: '장비 현황', icon: '🖥️' },
-  { path: '/calendar', label: '일정/캘린더', icon: '📅' },
-  { path: '/timetable', label: '학기 시간표', icon: '🗂️' },
-  { path: '/checklist', label: '미션 체크', icon: '✅' },
-  { path: '/lunch-map', label: '점심메뉴 지도', icon: '🍜' },
-  { path: '/game', label: '내기 게임', icon: '🎲' },
-  { path: '/complaints', label: '민원처리함', icon: '💬' },
-  { path: '/admin/users', label: '회원 관리', icon: '🛡️', adminOnly: true },
+  {
+    path: '/',
+    label: '홈',
+    paths: [
+      'M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8',
+      'M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z',
+    ],
+  },
+  {
+    path: '/manual',
+    label: '매뉴얼',
+    paths: [
+      'M12 5v16',
+      'M20.001 19A2 2 0 0022 17V5a2 2 0 00-1.999-2L16 3.002A5 5 0 0012 5a5 5 0 00-4-2H4a2 2 0 00-2 2v12a2 2 0 001.999 2H8a5 5 0 014 2 5 5 0 014-2z',
+    ],
+  },
+  {
+    path: '/board',
+    label: '게시판',
+    paths: [
+      'M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2',
+      'M9 2h6a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z',
+      'M12 11h4',
+      'M12 16h4',
+      'M8 11h.01',
+      'M8 16h.01',
+    ],
+  },
+  {
+    path: '/equipment',
+    label: '장비',
+    paths: [
+      'M4 3h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z',
+      'M8 21h8',
+      'M12 17v4',
+    ],
+  },
+  {
+    path: '/calendar',
+    label: '일정',
+    paths: [
+      'M8 2v3',
+      'M16 2v3',
+      'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z',
+      'M3 9h18',
+      'M8 13h.01',
+      'M12 13h.01',
+      'M16 13h.01',
+      'M8 17h.01',
+      'M12 17h.01',
+      'M16 17h.01',
+    ],
+  },
+  {
+    path: '/timetable',
+    label: '시간표',
+    paths: [
+      'M3 9h18',
+      'M9 3v18',
+      'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z',
+    ],
+  },
+  {
+    path: '/checklist',
+    label: '미션',
+    paths: ['M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z', 'm16 9-5.5 5.5L8 12'],
+  },
+  {
+    path: '/lunch-map',
+    label: '점심',
+    paths: [
+      'M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2',
+      'M7 2v20',
+      'M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7',
+    ],
+  },
+  {
+    path: '/game',
+    label: '게임',
+    paths: [
+      'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z',
+      'M16 8h.01',
+      'M8 8h.01',
+      'M8 16h.01',
+      'M16 16h.01',
+      'M12 12h.01',
+    ],
+  },
+  {
+    path: '/complaints',
+    label: '민원',
+    paths: [
+      'M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z',
+    ],
+  },
+  {
+    path: '/admin/users',
+    label: '회원',
+    adminOnly: true,
+    paths: [
+      'M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z',
+      'm9 12 2 2 4-4',
+    ],
+  },
 ]
 
 export function visibleNavItems(isAdmin) {

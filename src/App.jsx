@@ -18,7 +18,6 @@ import TaskList from './pages/tasks/TaskList'
 import Game from './pages/game/Game'
 import Complaints from './pages/complaints/ComplaintsPage'
 import UserManagement from './pages/admin/UserManagement'
-import More from './pages/More'
 
 export default function App() {
   const { user, isApproved, loading } = useAuth()
@@ -59,7 +58,6 @@ export default function App() {
         <Route path="/game" element={<Game />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/admin/users" element={<UserManagement />} />
-        <Route path="/more" element={<More />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
